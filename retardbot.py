@@ -184,7 +184,8 @@ banned_words = auto_mod_data[1]
 
 
 def save_data():
-    pickle.dump([anime_list, forbidden_animes, sorted_anime_list, [global_id, global_exp, allowed_channels],[sfw_channels, banned_words], tournament_logs], open('Requiem 2.0 - Data', 'wb'))
+    pickle.dump([anime_list, forbidden_animes, sorted_anime_list, [global_id, global_exp, allowed_channels],[sfw_channels, banned_words], tournament_logs], open(
+        'Requiem 2.0 - Data', 'wb'))
 
 client = commands.Bot(command_prefix='.')
 common, uncommon, rare, legendary, mythical = 50, 50, 50, 50, 50
