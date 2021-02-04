@@ -1,1 +1,1 @@
-web: retardbot.py
+web: python retardbot.py
