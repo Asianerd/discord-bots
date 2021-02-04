@@ -1,1 +1,1 @@
-web: gunicorn retardbot.py
+web: retardbot.py
