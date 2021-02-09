@@ -1,1 +1,1 @@
-web: python requiem.py
+worker: python requiem.py
