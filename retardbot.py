@@ -755,8 +755,9 @@ async def on_message(message):
             for y in sorted(zip(global_id, global_exp), key=lambda x: getattr(x[1], 'total_exp'), reverse=True):
                 global_id_sorted.append(y[0])
             for x in range(len(global_exp[:32])):
+                # Not using fstrings here cos idk how to change heroku's python versions
                 global_rankings_text += (
-                    f'\n{str(x + 1).rjust(2, " ")}. LVL:{sorted(global_exp, key=lambda x: x.total_exp, reverse=True)[x].level} EXP:{str(sorted(global_exp, key=lambda x: x.total_exp, reverse=True)[x].total_exp).rjust(6, apostrosphe)} {await client.fetch_user(global_id_sorted[x])}')
+                    '\n'+(str(x + 1).rjust(2, " "))+'. LVL:'+(sorted(global_exp, key=lambda x: x.total_exp, reverse=True)[x].level)+' EXP:'+(str(sorted(global_exp, key=lambda x: x.total_exp, reverse=True)[x].total_exp).rjust(6, apostrosphe))+str(await client.fetch_user(global_id_sorted[x])))
             await message.channel.send(
                 f'**Global Rankings** ```' + global_rankings_text + '```' + '_This is just the top 32 because of discords character limit._')
 
