@@ -184,6 +184,54 @@ async def notification_channel_remove(ctx):
         NotificationAllowedChannels.remove(ctx.message.channel.id)
     else:
         await ctx.send("`The channel already doesn't have notifications allowed.`")
+
+
+@client.command(pass_context=True, brief="Changes the bot's status",
+                description="Changes the bot description.\nFormat:\ng - Game\nl - "
+                            "Listening\ns - Streaming\nw - Watching")
+async def change_pres(ctx, *args):
+    acts = ['g', 'l', 's', 'w']
+    wanted_act = args[0]
+    wanted_subject = args[1]
+    if wanted_act == acts[2]:
+        if len(args) >= 3: wanted_link = args[2]
+        else:
+            wanted_link = ''
+            await ctx.send(f'Arguments insufficient or incorrect  - Streaming status needs to be provided with a url')
+    else:
+        wanted_link = ''
+    if wanted_act in acts:
+        if wanted_act == acts[0]:
+            await client.change_presence(activity=discord.Game(name=wanted_subject))
+            await ctx.send(f'Activity set to **Playing {wanted_subject}**')
+        elif wanted_act == acts[1]:
+            await client.change_presence(
+                activity=discord.Activity(type=discord.ActivityType.listening, name=wanted_subject))
+            await ctx.send(f'Activity set to **Listening to {wanted_subject}**')
+        elif wanted_act == acts[2]:
+            await client.change_presence(activity=discord.Streaming(name=wanted_subject, url=wanted_link))
+            await ctx.send(f'Activity set to **Streaming {wanted_subject} at {wanted_link}**')
+        elif wanted_act == acts[3]:
+            await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=wanted_subject))
+            await ctx.send(f'Activity set to **Watching {wanted_subject}**')
+    else:
+        await ctx.send(f'Arguments insufficient or incorrect   -{args, wanted_act, wanted_subject}')
+
+
+@client.command(pass_context=True, hidden=True)
+@has_role('Bot Doctor')
+async def change_stat(ctx, args):
+    if args in ['do', 'on', 'id', 'in']:
+        if args == 'do':
+            await client.change_presence(status=discord.Status.do_not_disturb)
+        if args == 'on':
+            await client.change_presence(status=discord.Status.online)
+        if args == 'id':
+            await client.change_presence(status=discord.Status.idle)
+        if args == 'in':
+            await client.change_presence(status=discord.Status.invisible)
+    else:
+        await ctx.send('arg not in activity list')
 #
 
 client.run(botToken)
