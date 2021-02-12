@@ -72,14 +72,17 @@ def add_to_log():
 
 def save():
     pickle.dump(ExpData, open("Requiem 2.0 - XP", "wb"))
+    pickle.dump(NotificationAllowedChannels, open("Requiem 2.0 - Notif Channels", "wb"))
 
 
 def load():
-    global ExpData
+    global ExpData, NotificationAllowedChannels
     try:
         ExpData = pickle.load(open("Requiem 2.0 - XP", "rb"))
+        NotificationAllowedChannels = pickle.load(open("Requiem 2.0 - Notif Channels", "rb"))
     except FileNotFoundError:
         ExpData = []
+        NotificationAllowedChannels = []
         save()
 
 
@@ -187,14 +190,14 @@ async def notification_channel_remove(ctx):
 
 
 @client.command(pass_context=True, brief="Changes the bot's status",
-                description="Changes the bot description.\nFormat:\ng - Game\nl - "
-                            "Listening\ns - Streaming\nw - Watching")
+                description="Changes the bot description.\nFormat:\ng - Game\nl - Listening\ns - Streaming\nw - Watching")
 async def change_pres(ctx, *args):
     acts = ['g', 'l', 's', 'w']
     wanted_act = args[0]
     wanted_subject = args[1]
     if wanted_act == acts[2]:
-        if len(args) >= 3: wanted_link = args[2]
+        if len(args) >= 3:
+            wanted_link = args[2]
         else:
             wanted_link = ''
             await ctx.send(f'Arguments insufficient or incorrect  - Streaming status needs to be provided with a url')
@@ -212,7 +215,8 @@ async def change_pres(ctx, *args):
             await client.change_presence(activity=discord.Streaming(name=wanted_subject, url=wanted_link))
             await ctx.send(f'Activity set to **Streaming {wanted_subject} at {wanted_link}**')
         elif wanted_act == acts[3]:
-            await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=wanted_subject))
+            await client.change_presence(
+                activity=discord.Activity(type=discord.ActivityType.watching, name=wanted_subject))
             await ctx.send(f'Activity set to **Watching {wanted_subject}**')
     else:
         await ctx.send(f'Arguments insufficient or incorrect   -{args, wanted_act, wanted_subject}')
@@ -256,6 +260,8 @@ async def phurge(ctx, *args):
         await ctx.message.channel.purge(limit=args)
     else:
         await ctx.send(f'Purge amount argument incorrect.')
+
+
 #
 
 client.run(botToken)
