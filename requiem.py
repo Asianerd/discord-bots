@@ -232,6 +232,30 @@ async def change_stat(ctx, args):
             await client.change_presence(status=discord.Status.invisible)
     else:
         await ctx.send('arg not in activity list')
+
+
+@client.command(pass_context=True, hidden=True)
+async def cred(ctx):
+    await ctx.send('<@517998886141558786> is my creator')
+
+
+@client.command(pass_context=True, hidden=True)
+@has_role("Bot Doctor")
+async def shut_down(ctx):
+    await ctx.send(f'{ctx.message.author.name} has shut me down.')
+    print(ctx.message.author.name)
+    await client.close()
+
+
+@client.command(brief='Deletes messages',
+                description='Deletes messages.\nOnly works for those with the manage messagse permission.\nFormat:\n.phurge {amount of messages to delete}')
+@has_permissions(manage_messages=True)
+async def phurge(ctx, *args):
+    if type(args[0]) == str:
+        args = int(args[0]) + 1
+        await ctx.message.channel.purge(limit=args)
+    else:
+        await ctx.send(f'Purge amount argument incorrect.')
 #
 
 client.run(botToken)
