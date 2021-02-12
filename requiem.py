@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import has_role, has_permissions
 import random
 import pickle
-import time
 
 botToken = pickle.load(open("Requiem 2.0 - Token", "rb"))
 client = commands.Bot(command_prefix=".")
@@ -49,14 +49,6 @@ class Exp:
 #
 
 # Functions
-def load():
-    try:
-        _final = pickle.load(open("Requiem 2.0 - XP", "rb"))
-    except FileNotFoundError:
-        pickle.dump(_final := [], open("Requiem 2.0 - XP", "wb"))
-    return _final
-
-
 def random_colour():
     return random.randint(0x100000, 0xFFFFFF)
 
@@ -77,21 +69,27 @@ def get_ping_colour(_i):
 def add_to_log():
     pass
 
+
 def save():
-    pickle.dump(ExpData,open("Requiem 2.0 - XP","wb"))
+    pickle.dump(ExpData, open("Requiem 2.0 - XP", "wb"))
+
 
 def load():
     global ExpData
     try:
-        ExpData = pickle.load(open("Requiem 2.0 - XP","rb"))
+        ExpData = pickle.load(open("Requiem 2.0 - XP", "rb"))
     except FileNotFoundError:
         ExpData = []
         save()
+
+
 #
 
 # Variables
 ExpData = []
 NotificationAllowedChannels = []
+
+
 #
 
 # Commands
@@ -108,6 +106,7 @@ async def ping(ctx):
         title=f"***Ping : `{_ping}ms`***",
         color=int((int(get_ping_colour(_ping)[0] * 65536)) + (int(get_ping_colour(_ping)[1]) * 256)))
     await ctx.send(embed=_embed)
+
 
 @client.event
 async def on_message(message):
@@ -137,13 +136,14 @@ async def on_message(message):
 async def exp_rank(ctx):
     apostrophe = "'"
     final = [
-        f"{str(i).rjust(3,' ')}. | {str(x.level).rjust(2,' ')}. | {str(x.totalExp).rjust(6,apostrophe)} | {str(x.username).ljust(37,' ')}"
-        for i,x in enumerate(sorted(ExpData,key=lambda y:y.totalExp,reverse=True),start=1)]
+        f"{str(i).rjust(3, ' ')}. | {str(x.level).rjust(2, ' ')}. | {str(x.totalExp).rjust(6, apostrophe)} | {str(x.username).ljust(37, ' ')}"
+        for i, x in enumerate(sorted(ExpData, key=lambda y: y.totalExp, reverse=True), start=1)]
     await ctx.send(embed=discord.Embed(
         title="***Exp Rankings***",
-        description="```\nRANK | LVL |  EXP   | USER\n"+'\n'.join(final)+"```",
+        description="```\nRANK | LVL |  EXP   | USER\n" + '\n'.join(final) + "```",
         color=random_colour()
     ))
+
 
 @client.command()
 async def get_lvl(ctx):
@@ -161,12 +161,14 @@ async def get_lvl(ctx):
     await ctx.send(embed=discord.Embed(
         title=f"**{fetched_user.username}'s Level**",
         description=f"```"
-                    f"Rank  : {sorted(ExpData,key=lambda y:y.totalExp,reverse=True).index(fetched_user)+1}\n"
+                    f"Rank  : {sorted(ExpData, key=lambda y: y.totalExp, reverse=True).index(fetched_user) + 1}\n"
                     f"Level : {fetched_user.level}\n"
                     f"Exp   : {fetched_user.currentExp}/{fetched_user.levelUpRequiredXp}```",
         colour=random_colour()
     ))
 
+
+@has_permissions(manage_messages=True)
 @client.command()
 async def notification_channel_allow(ctx):
     if ctx.message.channel.id not in NotificationAllowedChannels:
@@ -174,6 +176,8 @@ async def notification_channel_allow(ctx):
     else:
         await ctx.send("`The channel already has notifications allowed.`")
 
+
+@has_permissions(manage_messages=True)
 @client.command()
 async def notification_channel_remove(ctx):
     if ctx.message.channel.id in NotificationAllowedChannels:
