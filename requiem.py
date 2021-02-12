@@ -104,7 +104,7 @@ async def ping(ctx):
     _ping = round(client.latency * 1000, 2)
     _embed = discord.Embed(
         title=f"***Ping : `{_ping}ms`***",
-        color=int((int(get_ping_colour(_ping)[0] * 65536)) + (int(get_ping_colour(_ping)[1]) * 256)))
+        color=int((int(get_ping_colour(_ping)[0])) + (int(get_ping_colour(_ping)[1]) * 256)))
     await ctx.send(embed=_embed)
 
 
