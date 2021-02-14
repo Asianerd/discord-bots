@@ -44,8 +44,6 @@ class Exp:
     async def UpdateName(self):
         _name = await client.fetch_user(self.userId)
         self.username = f"{_name.name}#{_name.discriminator}"
-
-
 #
 
 # Functions
