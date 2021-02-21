@@ -138,7 +138,7 @@ async def exp_rank(ctx):
     apostrophe = "'"
     final = [
         f"{str(i).rjust(3, ' ')}. | {str(x.level).rjust(2, ' ')}. | {str(x.totalExp).rjust(6, apostrophe)} | {str(x.username).ljust(37, ' ')}"
-        for i, x in enumerate(sorted(ExpData, key=lambda y: y.totalExp, reverse=True), start=1)]
+        for i, x in enumerate(sorted(ExpData, key=lambda y: y.totalExp, reverse=True)[::29], start=1)]
     await ctx.send(embed=discord.Embed(
         title="***Exp Rankings***",
         description="```\nRANK | LVL |  EXP   | USER\n" + '\n'.join(final) + "```",
