@@ -7,7 +7,7 @@ from pathlib import Path
 
 botToken = pickle.load(open("Requiem 2.0 - Token", "rb"))
 client = commands.Bot(command_prefix=".")
-saveFilePath = Path(".")/"Requiem Data"
+saveFilePath = Path(".")/"Requiem_Data"
 
 
 # Classes
