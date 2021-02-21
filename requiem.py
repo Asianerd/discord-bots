@@ -3,9 +3,11 @@ from discord.ext import commands
 from discord.ext.commands import has_role, has_permissions
 import random
 import pickle
+from pathlib import Path
 
 botToken = pickle.load(open("Requiem 2.0 - Token", "rb"))
 client = commands.Bot(command_prefix=".")
+saveFilePath = Path(".")/"Requiem Data"
 
 
 # Classes
@@ -69,15 +71,15 @@ def add_to_log():
 
 
 def save():
-    pickle.dump(ExpData, open("Requiem 2.0 - XP", "wb"))
-    pickle.dump(NotificationAllowedChannels, open("Requiem 2.0 - Notif Channels", "wb"))
+    pickle.dump(ExpData, open(f"{saveFilePath}/Requiem 2.0 - XP", "wb"))
+    pickle.dump(NotificationAllowedChannels, open(f"{saveFilePath}/Requiem 2.0 - Notification Channels", "wb"))
 
 
 def load():
     global ExpData, NotificationAllowedChannels
     try:
-        ExpData = pickle.load(open("Requiem 2.0 - XP", "rb"))
-        NotificationAllowedChannels = pickle.load(open("Requiem 2.0 - Notif Channels", "rb"))
+        ExpData = pickle.load(open(f"{saveFilePath}/Requiem 2.0 - XP", "rb"))
+        NotificationAllowedChannels = pickle.load(open(f"{saveFilePath}/Requiem 2.0 - Notification Channels", "rb"))
     except FileNotFoundError:
         ExpData = []
         NotificationAllowedChannels = []
