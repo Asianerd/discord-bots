@@ -138,14 +138,17 @@ async def on_message(message):
 @client.command()
 async def exp_rank(ctx):
     apostrophe = "'"
-    final = [
+    userList = [
         f"{str(i).rjust(3, ' ')}. | {str(x.level).rjust(2, ' ')}. | {str(x.totalExp).rjust(6, apostrophe)} | {str(x.username).ljust(37, ' ')}"
-        for i, x in enumerate(sorted(ExpData, key=lambda y: y.totalExp, reverse=True)[::29], start=1)]
-    await ctx.send(embed=discord.Embed(
+        for i, x in enumerate(sorted(ExpData, key=lambda y: y.totalExp, reverse=True)[0:30], start=1)]
+
+    final = discord.Embed(
         title="***Exp Rankings***",
-        description="```\nRANK | LVL |  EXP   | USER\n" + '\n'.join(final) + "```",
-        color=random_colour()
-    ))
+        description="```\nRANK | LVL |  EXP   | USER\n" + '\n'.join(userList) + "```",
+        color=random_colour())
+    final.set_footer(text=f"Showing {len(userList)} out of {len(ExpData)}")
+
+    await ctx.send(embed=final)
 
 
 @client.command()
