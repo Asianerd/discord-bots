@@ -3,39 +3,49 @@ from discord.ext import commands
 import time
 import pickle
 import random
+from pathlib import Path
 
 client = commands.Bot(command_prefix='!')
+saveFilePath = Path(".")/"RollerViking_Data"
+botToken = pickle.load(open(f"{saveFilePath}/RollerViking - Token","rb"))
 
 """Class definitions"""
 
+
 class Suggestion:
-    def __init__(self,_suggestion,_time,_user):
+    def __init__(self, _suggestion, _time, _user):
         self.suggestion = _suggestion
         self.time = _time
         self.user = _user
 
+
 try:
-    suggestions = pickle.load(open('RollerVikings - Suggestions','rb'))
+    suggestions = pickle.load(open(f'{saveFilePath}/RollerVikings - Suggestions', 'rb'))
 except FileNotFoundError:
-    pickle.dump(suggestions:=[],open('RollerVikings - Suggestions','wb'))
+    pickle.dump(suggestions := [], open(f'{saveFilePath}/RollerVikings - Suggestions', 'wb'))
 
 """Functions"""
 
+
 def saveSuggestions():
-    pickle.dump(suggestions,open('RollerVikings - Suggestions','wb'))
+    pickle.dump(suggestions, open(f'{saveFilePath}/RollerVikings - Suggestions', 'wb'))
+
 
 def RandomColour():
-    return random.randint(1048576,0xFFFFFF)
+    return random.randint(1048576, 0xFFFFFF)
+
 
 """Commands"""
+
 
 @client.event
 async def on_ready():
     await client.change_presence(activity=discord.Game("RollerVikings"))
     print('Bot is ready')
 
-@client.command(pass_context=True,brief='Use this to submit suggestions. Please keep it concise and short')
-async def suggest(ctx,*args):
+
+@client.command(pass_context=True, brief='Use this to submit suggestions. Please keep it concise and short')
+async def suggest(ctx, *args):
     if not ' '.join(args) == '':
         _user = await client.fetch_user(ctx.message.author.id)
         suggestions.append(Suggestion(' '.join(args),
@@ -46,18 +56,27 @@ async def suggest(ctx,*args):
     else:
         await ctx.send("Your suggestion was empty and thus rejected.")
 
+
 @client.command()
 async def get_suggestions(ctx):
     final = discord.Embed(title='***Suggestions***',
                           description='\n'.join([
-                              f'[{time.strftime("%d/%m/%y",x.time)}] {x.user} - {x.suggestion}'
-                              for x in suggestions
-                          ]),colour=RandomColour())
+                              f'{index+1}. [{time.strftime("%d/%m/%y", x.time)}] {x.user} - {x.suggestion}'
+                              for index,x in enumerate(suggestions)
+                          ]), colour=RandomColour())
     await ctx.send(embed=final)
 
-@client.command(pass_context=True)
-async def get_user(ctx):
-    user = await client.fetch_user(ctx.message.author.id)
-    await ctx.send(user)
+@client.command()
+async def remove_suggestion(ctx,args):
+    try:
+        index = int(args)
+        if (index >= 1) and (index <= (len(suggestions))):
+            suggestions.pop(index-1)
+            await ctx.send("Suggestion successfully removed.")
+        else:
+            await ctx.send("Index not in range.")
+    except ValueError:
+        await ctx.send("Parameter was not an integer.")
+    saveSuggestions()
 
-client.run('ODAzODk4NjQ4MzIzOTQ4NTY0.YBEe9Q.38GDvOzgigQT6v5MEZVekeBMWNc')
+client.run(botToken)
