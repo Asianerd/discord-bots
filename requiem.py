@@ -5,13 +5,16 @@ import random
 import pickle
 from pathlib import Path
 
-client = commands.Bot(command_prefix=".")
+client = commands.Bot(command_prefix=".",help_command=None)
 saveFilePath = Path(".") / "Requiem_Data"
-botToken = pickle.load(open(f"{saveFilePath}/Requiem 2.0 - Token", "rb"))
+botToken = pickle.load(open(f"{saveFilePath}/Requiem - Token", "rb"))
+creator = 517998886141558786
 
 
 # Classes
 class Exp:
+    loggedMessagesAmount = 10
+
     def __init__(self, _userID):
         self.userId = _userID
         self.username = ''
@@ -21,15 +24,31 @@ class Exp:
         self.levelUpRequiredXp = 100
 
         self.lastSentMessage = ""
+        self.lastSentMessages = []
+        self.serverSpoken = {}
+
+    def AddToLastMessages(self, msg_content):
+        if msg_content not in self.lastSentMessages:
+            self.lastSentMessages.append(msg_content)
+            if len(self.lastSentMessages) >= Exp.loggedMessagesAmount:
+                self.lastSentMessages = self.lastSentMessages[-Exp.loggedMessagesAmount:]
+
+    def AddToChannelsSpoken(self, guild_id, channel_id):
+        if self.serverSpoken.get(guild_id) is None:
+            self.serverSpoken[guild_id] = {}
+        if self.serverSpoken[guild_id].get(channel_id) is None:
+            self.serverSpoken[guild_id][channel_id] = 1
+        else:
+            self.serverSpoken[guild_id][channel_id] += 1
 
     def AddExp(self, msg_content):
-        if msg_content != self.lastSentMessage:
-            self.lastSentMessage = msg_content
+        if msg_content not in self.lastSentMessages:
             added_exp = int(len(msg_content) * 2)
             if added_exp > 500:
                 added_exp = 500
             self.currentExp += added_exp
             self.totalExp += added_exp
+        self.AddToLastMessages(msg_content)
 
     def CanLevelUp(self):
         return self.currentExp >= self.levelUpRequiredXp
@@ -39,15 +58,27 @@ class Exp:
         self.currentExp -= self.levelUpRequiredXp
         self.levelUpRequiredXp *= 2
 
-    async def SendLevelUp(self, ctx):
+    async def SendLevelUp(self, ctx, delete=True):
         _message = await ctx.send(embed=discord.Embed(title=f"{self.username} has leveled up!",
                                                       description=f"{self.level - 1} ==> {self.level}",
                                                       color=random_colour()))
-        await _message.delete(delay=5)
+        if delete:
+            await _message.delete(delay=5)
 
     async def UpdateName(self):
         _name = await client.fetch_user(self.userId)
         self.username = f"{_name.name}#{_name.discriminator}"
+
+
+class Server:
+    def __init__(self, guild_id):
+        self.guild_id = guild_id
+        self.name = ""
+
+        self.level_up_channel = 0
+
+    def update_name(self, _name):
+        self.name = _name
 
 
 #
@@ -75,38 +106,69 @@ def add_to_log():
 
 
 def save():
-    pickle.dump(ExpData, open(f"{saveFilePath}/Requiem 2.0 - XP", "wb"))
-    pickle.dump(NotificationAllowedChannels, open(f"{saveFilePath}/Requiem 2.0 - Notification Channels", "wb"))
+    pickle.dump(ExpData, open(f"{saveFilePath}/Requiem - XP", "wb"))
+    pickle.dump(NotificationAllowedChannels, open(f"{saveFilePath}/Requiem - Notification Channels", "wb"))
+    pickle.dump(Servers, open(f"{saveFilePath}/Requiem - Servers", "wb"))
 
 
 def load():
-    global ExpData, NotificationAllowedChannels
+    global ExpData, NotificationAllowedChannels, Servers
     try:
-        ExpData = pickle.load(open(f"{saveFilePath}/Requiem 2.0 - XP", "rb"))
-        NotificationAllowedChannels = pickle.load(open(f"{saveFilePath}/Requiem 2.0 - Notification Channels", "rb"))
+        ExpData = pickle.load(open(f"{saveFilePath}/Requiem - XP", "rb"))
+        NotificationAllowedChannels = pickle.load(open(f"{saveFilePath}/Requiem - Notification Channels", "rb"))
+        Servers = pickle.load(open(f"{saveFilePath}/Requiem - Servers", "rb"))
     except FileNotFoundError:
         ExpData = []
         NotificationAllowedChannels = []
+        Servers = []
         save()
 
 
-async def disposableMessage(msg, reaction):
+async def disposable_message(msg, reaction):
     DisposableMessages.append(msg)
     await msg.add_reaction(reaction)
+
+
+def make_server_object(guild_id):
+    global Servers
+    if guild_id not in [x.guild_id for x in Servers]:
+        Servers.append(Server(guild_id))
+
+
+def get_server_object(guild_id):
+    return Servers[[x.guild_id for x in Servers].index(guild_id)]
+
+
+def is_creator(user_id):
+    return user_id == creator
 
 
 #
 
 # Variables
+Servers = []
 ExpData = []
+Commands = [[["exp_rank","Shows the experience ranking."],
+            ["get_lvl","Shows the level and current progress of the mentioned user."]],
+            [["notification_channel_allow","Enables notifications in the channel. Will only send notifications if there isnt a dedicated notification channel."],
+            ["notification_channel_remove","Disables notifications in the channel. Will only send notifications if there isnt a dedicated notification channel."],
+            ["check_notification","Shows whether notifications has been enabled for the channel."],
+            ["set_level_channel","Sets the channel as the dedicated level-up notification channel."],
+            ["remove_level_channel","Removes the dedicated level-up feature from the server."],
+            ["phurge","Purges the selected amount of messages.(Named phurge to avoid multiple bots doing the same thing)"],
+            ["ban","Bans the mentioned user."],
+            ["kick","Kicks the mentioned user."]],
+            [["oos","Out of sight. Outputs a giant block of nothing to 'erase' chat.(Add letters or anything after the 'oos' to make the outputted oos disposable)"],
+            ["fetch_pfp","Returns the mentioned user's profile picture."],
+            ["get_info","Returns information, such as his/her most active server"]]]
 NotificationAllowedChannels = []
 DisposableMessages = []
-Emojis = ["\N{CROSS MARK}"]
+Emojis = ["\N{WASTEBASKET}"]
 
 
 #
 
-# Commands
+# Events
 @client.event
 async def on_ready():
     load()
@@ -121,30 +183,42 @@ async def ping(ctx):
         color=int((int(get_ping_colour(_ping)[0])) + (int(get_ping_colour(_ping)[1]) * 256)))
     message = await ctx.send(embed=_embed)
     await ctx.message.delete()
-    await disposableMessage(message, Emojis[0])
+    await disposable_message(message, Emojis[0])
 
 
 @client.event
 async def on_message(message):
-    if not message.author.bot:
-        if message.author.id not in [x.userId for x in ExpData]:
-            ExpData.append(Exp(message.author.id))
-            await ExpData[-1].UpdateName()
-        _fetchedUser = ExpData[[x.userId for x in ExpData].index(message.author.id)]
+    if message.author.bot:
+        return
+    # Makes the server object (if it doesnt exist yet)
+    make_server_object(message.guild.id)
+    _server = get_server_object(message.guild.id)
 
-        # Updates user's name
-        if f"{message.author.name}#{message.author.discriminator}" != _fetchedUser.username:
-            await _fetchedUser.UpdateName()
+    _server.update_name(message.guild.name)
 
-        # Adding Exp and levelling up
-        _fetchedUser.AddExp(message.content)
-        if _fetchedUser.CanLevelUp():
-            _fetchedUser.LevelUp()
+    if message.author.id not in [x.userId for x in ExpData]:
+        ExpData.append(Exp(message.author.id))
+        await ExpData[-1].UpdateName()
+    _fetchedUser = ExpData[[x.userId for x in ExpData].index(message.author.id)]
+
+    # Updates user's name
+    if f"{message.author.name}#{message.author.discriminator}" != _fetchedUser.username:
+        await _fetchedUser.UpdateName()
+
+    # Adding Exp and levelling up
+    _fetchedUser.AddExp(message.content)
+    if _fetchedUser.CanLevelUp():
+        _fetchedUser.LevelUp()
+        if _server.level_up_channel != 0:
+            await _fetchedUser.SendLevelUp(_server.level_up_channel, False)  # Send to a specified channel
+        else:
             if message.channel.id in NotificationAllowedChannels:
-                await _fetchedUser.SendLevelUp(message.channel)
+                await _fetchedUser.SendLevelUp(message.channel)  # Send to the channel the user sent message
 
-        save()
+    # Increase count for the current channel
+    _fetchedUser.AddToChannelsSpoken(message.guild.id, message.channel.id)
 
+    save()
     await client.process_commands(message)
 
 
@@ -156,7 +230,24 @@ async def on_reaction_add(reaction, user):
         await reaction.message.delete()
 
 
+#
+
+# Commands
+
 @client.command()
+async def help(ctx):
+    await ctx.message.delete()
+    newline = "\n"
+    embed = discord.Embed(
+        title="__**Commands**__",
+        description=f"\n\n**Experience**\n{newline.join([f'{x[0]} : {x[1]}' for x in Commands[0]])}"
+                    f"\n\n**Moderation**\n{newline.join([f'{x[0]} : {x[1]}' for x in Commands[1]])}"
+                    f"\n\n**Others**\n{newline.join([f'{x[0]} : {x[1]}' for x in Commands[2]])}",
+        color=random_colour()
+    )
+    await disposable_message(await ctx.send(embed=embed),Emojis[0])
+
+@client.command(aliases=["xp_rank", "experience_rank"])
 async def exp_rank(ctx):
     apostrophe = "'"
     userList = [
@@ -172,10 +263,10 @@ async def exp_rank(ctx):
 
     await ctx.message.delete()
     message = await ctx.send(embed=final)
-    await disposableMessage(message, Emojis[0])
+    await disposable_message(message, Emojis[0])
 
 
-@client.command()
+@client.command(aliases=["get_level", "level", "lvl", "fetch_lvl", "fetch_level"])
 async def get_lvl(ctx):
     try:
         if not ctx.message.mentions:
@@ -197,7 +288,7 @@ async def get_lvl(ctx):
         colour=random_colour()
     ))
     await ctx.message.delete()
-    await disposableMessage(message, Emojis[0])
+    await disposable_message(message, Emojis[0])
 
 
 @has_permissions(manage_messages=True)
@@ -231,13 +322,33 @@ async def check_notification(ctx):
     else:
         message = await ctx.send("`Notifications are not allowed in this channel.`")
     await ctx.message.delete(delay=5)
-    await message.delete(5)
+    await message.delete(delay=5)
+
+
+@client.command()
+@has_permissions(manage_messages=True)
+async def set_level_channel(ctx):
+    await ctx.message.delete()
+    _guild = get_server_object(ctx.guild.id)
+    _guild.level_up_channel = ctx.message.channel
+    await (await ctx.send("`Channel set for level-up notifications.`")).delete(delay=5)
+
+
+@client.command()
+@has_permissions(manage_messages=True)
+async def remove_level_channel(ctx):
+    await ctx.message.delete()
+    _guild = get_server_object(ctx.guild.id)
+    _guild.level_up_channel = 0
+    await (await ctx.send("`Channel set for no level-up notifications.`")).delete(delay=5)
 
 
 @client.command(pass_context=True, brief="Changes the bot's status",
                 description="Changes the bot description.\nFormat:\ng - Game\nl - Listening\ns - Streaming\nw - "
                             "Watching")
 async def change_pres(ctx, *args):
+    if not is_creator(ctx.message.author.id):
+        return
     acts = ['g', 'l', 's', 'w']
     wanted_act = args[0]
     wanted_subject = args[1]
@@ -266,7 +377,7 @@ async def change_pres(ctx, *args):
             await client.change_presence(
                 activity=discord.Activity(type=discord.ActivityType.watching, name=wanted_subject))
             message = await ctx.send(f'Activity set to **Watching {wanted_subject}**')
-        await disposableMessage(message, Emojis[0])
+        await disposable_message(message, Emojis[0])
     else:
         await (await ctx.send(f'Arguments insufficient or incorrect   -{args, wanted_act, wanted_subject}')).delete(
             delay=3)
@@ -274,8 +385,9 @@ async def change_pres(ctx, *args):
 
 
 @client.command(pass_context=True, hidden=True)
-@has_role('Bot Doctor')
 async def change_stat(ctx, args):
+    if not is_creator(ctx.message.author.id):
+        return
     if args in ['do', 'on', 'id', 'in']:
         if args == 'do':
             await client.change_presence(status=discord.Status.do_not_disturb)
@@ -292,18 +404,20 @@ async def change_stat(ctx, args):
 
 @client.command(pass_context=True, hidden=True)
 async def cred(ctx):
-    await ctx.send('<@517998886141558786> is my creator')
+    await ctx.send(f'<@{creator}> is my creator')
 
 
 @client.command(pass_context=True, hidden=True)
-@has_role("Bot Doctor")
 async def shut_down(ctx):
+    if not is_creator(ctx.message.author.id):
+        return
     await ctx.send(f'<@{ctx.message.author.id}> has shut me down.')
     print(ctx.message.author.name)
     await client.close()
 
 
-@client.command(brief='Deletes messages',
+@client.command(aliases=["purge"],
+                brief='Deletes messages',
                 description='Deletes messages.\nOnly works for those with the manage messages '
                             'permission.\nFormat:\n.phurge {amount of messages to delete}')
 @has_permissions(manage_messages=True)
@@ -313,6 +427,34 @@ async def phurge(ctx, *args):
         await ctx.message.channel.purge(limit=amount)
     except ValueError:
         await (await ctx.send(f'`Purge amount argument incorrect.`')).delete(delay=3)
+
+
+@client.command()
+@has_permissions(ban_members=True)
+async def ban(ctx, args="none"):
+    if not ctx.message.mentions:
+        await ctx.send("`No user mentioned.`")
+    else:
+        banned_user = ctx.message.mentions[0]
+        if args == "none":
+            await banned_user.ban()
+        else:
+            await banned_user.ban(reason=args)
+        await (await ctx.send("`User successfully banned.`")).delete(delay=5)
+
+
+@client.command()
+@has_permissions(kick_members=True)
+async def kick(ctx, args="none"):
+    if not ctx.message.mentions:
+        await ctx.send("`No user mentioned.`")
+    else:
+        kicked_user = ctx.message.mentions[0]
+        if args == "none":
+            await kicked_user.kick()
+        else:
+            await kicked_user.kick(reason=args)
+        await (await ctx.send("`User successfully kicked.`")).delete(delay=5)
 
 
 #
@@ -334,8 +476,64 @@ async def oos(ctx, args="none"):
         '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
         '‎‎\n‎‎\n‎‎\n‎')
     if args != "none":
-        await disposableMessage(message, Emojis[0])
+        await disposable_message(message, Emojis[0])
 
+
+@client.command(aliases=["get_pfp", "profile_pic", "pfp"])
+async def fetch_pfp(ctx):
+    if not ctx.message.mentions:
+        selected_user = ctx.message.author
+    else:
+        selected_user = ctx.message.mentions[0]
+    pfp = selected_user.avatar_url
+    embed = discord.Embed(title=f"**{selected_user.name}'s profile picture**",
+                          color=random_colour())
+    embed.set_image(url=pfp)
+    await ctx.send(embed=embed)
+
+
+@client.command()
+async def get_info(ctx):
+    try:
+        if not ctx.message.mentions:
+            user_object = ExpData[[x.userId for x in ExpData].index(ctx.message.author.id)]
+            _user = ctx.message.author
+        else:
+            user_object = ExpData[[x.userId for x in ExpData].index(ctx.message.mentions[0].id)]
+    except ValueError:
+        new_user = Exp(ctx.message.mentions[0].id)
+        ExpData.append(new_user)
+        user_object = new_user
+        await user_object.UpdateName()
+
+    if not ctx.message.mentions:
+        _user = ctx.message.author
+    else:
+        _user = ctx.message.mentions[0]
+
+    most_spoken_server = (await client.fetch_guild([x for _, x in sorted(
+        zip([sum([user_object.serverSpoken[x][y] for y in user_object.serverSpoken[x]]) for x in
+             user_object.serverSpoken],
+            [x for x in user_object.serverSpoken]), reverse=True)][0]))
+
+    embed = discord.Embed(
+        title=f"{_user.name}",
+        description=f"**Most active in** : *{most_spoken_server}*\n"
+                    f"```"
+                    f"Rank  : {sorted(ExpData, key=lambda y: y.totalExp, reverse=True).index(user_object) + 1}\n"
+                    f"Level : {user_object.level}\n"
+                    f"Exp   : {user_object.currentExp}/{user_object.levelUpRequiredXp}```",
+        color=random_colour()
+    )
+    embed.set_image(url=_user.avatar_url)
+    await ctx.send(embed=embed)
+
+
+#
+# Code to sort by dict value
+# [x for _, x in sorted(zip([sum([data[x][y] for y in data[x]]) for x in data], [x for x in data]), reverse=True)][0]
+
+# Testing commands
 
 #
 
