@@ -7,7 +7,7 @@ from pathlib import Path
 
 client = commands.Bot(command_prefix='!')
 saveFilePath = Path(".")/"RollerViking_Data"
-botToken = pickle.load(open(f"{saveFilePath}/RollerViking - Token","rb"))
+botToken = pickle.load(open(f"{saveFilePath}/RollerVikings - Token","rb"))
 
 """Class definitions"""
 
