@@ -289,9 +289,9 @@ async def server_status(ctx):
                     f"**`Used`** : {round(psutil.cpu_percent(),2)}%\n"
                     f"\n\n"
                     f"**Memory usage**\n"
-                    f"**`Total`** : {int(_mem.total / 1000000000)} MB\n"
-                    f"**` Used`**  : {int(_mem.used / 1000000000)} MB   | _({int((_mem.used / _mem.total) * 100)}%)_\n"
-                    f"**` Free`**  : {int(_mem.free / 1000000000)} MB   | _({int((_mem.free/_mem.total)*100)}%)_\n\n"
+                    f"**`Total`** : {int(_mem.total / 1000000)} MB\n"
+                    f"**` Used`**  : {int(_mem.used / 1000000)} MB   | _({int((_mem.used / _mem.total) * 100)}%)_\n"
+                    f"**` Free`**  : {int(_mem.free / 1000000)} MB   | _({int((_mem.free/_mem.total)*100)}%)_\n\n"
                     f"**Server Uptime**\n"
                     f"{uptime_string(uptime())}",
         color=int(
@@ -529,18 +529,7 @@ async def kick(ctx, args="none"):
 @has_permissions(manage_messages=True)
 @client.command()
 async def oos(ctx, args="none"):
-    message = await ctx.send(
-        '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n‎ '
-        '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n '
-        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n '
-        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n‎‎\n‎‎\n‎')
+    message = await ctx.send('‎\n'*200)
     if args != "none":
         await disposable_message(message, Emojis[0])
 
