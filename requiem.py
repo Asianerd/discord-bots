@@ -5,7 +5,7 @@ import random
 import pickle
 from pathlib import Path
 
-client = commands.Bot(command_prefix=".",help_command=None)
+client = commands.Bot(command_prefix=";",help_command=None)
 saveFilePath = Path(".") / "Requiem_Data"
 botToken = pickle.load(open(f"{saveFilePath}/Requiem - Token", "rb"))
 creator = 517998886141558786
