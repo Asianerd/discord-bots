@@ -287,10 +287,10 @@ async def server_status(ctx):
         title="__**Server Status**__",
         description=f"**Latency**\n"
                     f"{round(client.latency * 1000, 2)}ms\n"
-                    f"\n\n"
+                    f"\n"
                     f"**CPU Usage**\n"
                     f"**`Used`** : {round(psutil.cpu_percent(),2)}%\n"
-                    f"\n\n"
+                    f"\n"
                     f"**Memory usage**\n"
                     f"**`Total`** : {int(_mem.total / 1048576)} MiB\n"
                     f"**` Used`**  : {int(_mem.used / 1048576)} MiB   | _({int((_mem.used / _mem.total) * 100)}%)_\n"
