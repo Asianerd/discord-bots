@@ -285,7 +285,10 @@ async def server_status(ctx):
     _mem = psutil.virtual_memory()
     final = discord.Embed(
         title="__**Server Status**__",
-        description=f"**CPU Usage**\n"
+        description=f"**Latency**\n"
+                    f"{round(client.latency * 1000, 2)}ms\n"
+                    f"\n\n"
+                    f"**CPU Usage**\n"
                     f"**`Used`** : {round(psutil.cpu_percent(),2)}%\n"
                     f"\n\n"
                     f"**Memory usage**\n"
