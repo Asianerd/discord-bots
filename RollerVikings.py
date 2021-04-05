@@ -40,7 +40,7 @@ def RandomColour():
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game("RollerVikings"))
+    await client.change_presence(activity=discord.Game("Timeline"))
     print('Bot is ready')
 
 
