@@ -9,10 +9,10 @@ client = commands.Bot(intents=intents, command_prefix="-", help_command=None)
 save_file_path = Path(".") / "roxa_Data"
 roxa_token = pickle.load(open(f"{save_file_path}/roxa - token","rb"))
 
-#roxa_id = 743449031161806878
-#announcement_channel_id = 856210886938198016
-roxa_id = 517998886141558786
-announcement_channel_id = 508764064076529682
+roxa_id = 743449031161806878
+announcement_channel_id = 856210886938198016
+#roxa_id = 517998886141558786
+#announcement_channel_id = 508764064076529682
 
 @client.event
 async def on_ready():
