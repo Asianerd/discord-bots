@@ -15,9 +15,73 @@ github_link = "https://github.com/Asianerd/discord-bots"
 
 
 # Classes
-class User:
-    def __init__(self):
-        pass
+class Exp:
+    loggedMessagesAmount = 10
+
+    def __init__(self, _user_id):
+        self.userId = _user_id
+        self.username = ''
+        self.totalExp = 0
+        self.level = 0
+        self.currentExp = 0
+        self.levelUpRequiredXp = 100
+
+        self.lastSentMessage = ""
+        self.lastSentMessages = []
+        self.serverSpoken = {}
+
+    def add_to_last_messages(self, msg_content):
+        if msg_content not in self.lastSentMessages:
+            self.lastSentMessages.append(msg_content)
+            if len(self.lastSentMessages) >= Exp.loggedMessagesAmount:
+                self.lastSentMessages = self.lastSentMessages[-Exp.loggedMessagesAmount:]
+
+    def add_to_channels_spoken(self, guild_id, channel_id):
+        if self.serverSpoken.get(guild_id) is None:
+            self.serverSpoken[guild_id] = {}
+        if self.serverSpoken[guild_id].get(channel_id) is None:
+            self.serverSpoken[guild_id][channel_id] = 1
+        else:
+            self.serverSpoken[guild_id][channel_id] += 1
+
+    def add_exp(self, msg_content):
+        if msg_content not in self.lastSentMessages:
+            added_exp = int(len(msg_content) * 2)
+            if added_exp > 500:
+                added_exp = 500
+            self.currentExp += added_exp
+            self.totalExp += added_exp
+        self.add_to_last_messages(msg_content)
+
+    def can_level_up(self):
+        return self.currentExp >= self.levelUpRequiredXp
+
+    def level_up(self):
+        self.level += 1
+        self.currentExp -= self.levelUpRequiredXp
+        self.levelUpRequiredXp *= 2
+
+    async def send_level_up(self, ctx, delete=True):
+        _message = await ctx.send(embed=discord.Embed(title=f"{self.username} has leveled up!",
+                                                      description=f"{self.level - 1} ==> {self.level}",
+                                                      color=random_colour()))
+        if delete:
+            await _message.delete(delay=5)
+
+    async def update_name(self):
+        _name = await client.fetch_user(self.userId)
+        self.username = f"{_name.name}#{_name.discriminator}"
+
+
+class Server:
+    def __init__(self, guild_id):
+        self.guild_id = guild_id
+        self.name = ""
+
+        self.level_up_channel = 0
+
+    def update_name(self, _name):
+        self.name = _name
 
 
 #
@@ -57,19 +121,26 @@ def uptime_string(enoch_time):
         return f"{int(minute)}m {int(second)}s"
 
 
+def add_to_log():
+    pass
+
+
 def save():
+    pickle.dump(ExpData, open(f"{saveFilePath}/bakupaku - XP", "wb"))
     pickle.dump(NotificationAllowedChannels, open(f"{saveFilePath}/bakupaku - Notification Channels", "wb"))
-    pickle.dump(Users, open(f"{saveFilePath}/bakupaku - Users", "wb"))
+    pickle.dump(Servers, open(f"{saveFilePath}/bakupaku - Servers", "wb"))
 
 
 def load():
-    global Users, NotificationAllowedChannels
+    global ExpData, NotificationAllowedChannels, Servers
     try:
+        ExpData = pickle.load(open(f"{saveFilePath}/bakupaku - XP", "rb"))
         NotificationAllowedChannels = pickle.load(open(f"{saveFilePath}/bakupaku - Notification Channels", "rb"))
-        Users = pickle.load(open(f"{saveFilePath}/bakupaku - Users","rb"))
+        Servers = pickle.load(open(f"{saveFilePath}/bakupaku - Servers", "rb"))
     except FileNotFoundError:
+        ExpData = []
         NotificationAllowedChannels = []
-        Users = []
+        Servers = []
         save()
 
 
@@ -78,13 +149,14 @@ async def disposable_message(msg, reaction):
     await msg.add_reaction(reaction)
 
 
-def make_user_object(guild_id):
-    if guild_id not in [x.guild_id for x in Users]:
-        Users.append(User())
+def make_server_object(guild_id):
+    global Servers
+    if guild_id not in [x.guild_id for x in Servers]:
+        Servers.append(Server(guild_id))
 
 
-def get_user_object( ):
-    return Users[[x.guild_id for x in Users].index(guild_id)]
+def get_server_object(guild_id):
+    return Servers[[x.guild_id for x in Servers].index(guild_id)]
 
 
 def is_creator(user_id):
@@ -94,7 +166,8 @@ def is_creator(user_id):
 #
 
 # Variables
-Users = []
+Servers = []
+ExpData = []
 Commands = [[["exp_rank", "Shows the experience ranking."],
              ["get_lvl", "Shows the level and current progress of the mentioned user."]],
             [["notification_channel_allow",

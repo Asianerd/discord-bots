@@ -7,20 +7,12 @@ from pathlib import Path
 
 client = commands.Bot(command_prefix='\\')
 
+author_id = 517998886141558786
 saveFilePath = Path(".") / "asian_Data"
 BotToken = pickle.load(open(f"{saveFilePath}/asian - Token", "rb"))
 SendMessages = False
+disallowed_messages = ["pinceapple",f"{client.command_prefix}toggle"]
 emojis = []
-
-
-class Emoji:
-    def __init__(self, name, _id):
-        self.name = name
-        self.id = _id
-
-    def get_emoji(self):
-        return f"<:{self.name}:{self.id}>"
-
 
 # Functions
 def random_colour():
@@ -122,13 +114,13 @@ async def join_me(ctx, args):
 @client.command()
 async def toggle(ctx):
     global SendMessages
-    if ctx.message.author.id == 517998886141558786: SendMessages = not SendMessages
+    if ctx.message.author.id == author_id: SendMessages = not SendMessages
 
 
 @client.event
 async def on_message(message):
     if ('pinceapple' not in message.content) and SendMessages:
-        if message.author.id == 517998886141558786:
+        if message.author.id == author_id:
             await message.delete()
             await message.channel.send(message.content)
     await client.process_commands(message)
@@ -148,73 +140,54 @@ async def fetch_pfp(ctx):
 
 
 @client.command()
+async def fetch_emojis(ctx):
+    [emojis.append(x) for x in ctx.message.guild.emojis]
+    await ctx.send("Gathering done")
+
+
+@client.command()
+async def fetch_emoji_list(ctx,args="0"):
+    try:
+        index_wanted = int(args) - 1
+    except ValueError:
+        index_wanted = 0
+
+    _emojis = [" | ".join([f"`{i.name} :`{str(i)}" for i in x]) for x in [emojis[x:x + 37] for x in range(0, len(emojis), 37)]]
+
+    if index_wanted not in range(0, len(_emojis)):
+        finalEmbed = discord.Embed(
+            title="Index out of range.",
+            description=f"Please select a number between 1 and {len(_emojis)}",
+            colour=random_colour()
+        )
+    else:
+        finalEmbed = discord.Embed(
+            title="**Emojis**",
+            description=_emojis[index_wanted],
+            colour=random_colour()
+        )
+
+    await ctx.send(embed=finalEmbed)
+
+@client.command()
 async def send_emoji(ctx, args):
     try:
-        index = int(args)
-
-        if (index >= 0) and (index <= (len(emojis) - 1)):
-            await ctx.send(emojis[index].get_emoji())
-            return
-        else:
-            message = await ctx.send("`Index does not fit the list.`")
-
+        index_wanted = int(args)-1
     except ValueError:
-        message = await ctx.send("`Index is not an integer.`")
-    await message.delete(delay=3)
+        index_wanted = -1
+    
 
 
-@client.command()
-async def get_emojis(ctx, args="none"):
-    if args == "none":
+    if (index_wanted not in range(0,len(emojis))) or (index_wanted==-1):
         await ctx.send(embed=discord.Embed(
-            title="**`Emojis`**",
-            description=(
-                "\n".join([f"`{str(i).rjust(2, ' ')}.` {x.get_emoji()} `{x.name}`" for i, x in enumerate(emojis)]))))
+            title="Index out of range.",
+            description=f"Please select a number between 1 and {len(emojis)}",
+            colour=random_colour()
+        ))
     else:
-        await ctx.send(embed=discord.Embed(
-            title="**`Emojis`**",
-            description=("\n".join(
-                [f"`{str(i).rjust(2, ' ')}.` {x.get_emoji()} `{x.name} {x.id}`" for i, x in enumerate(emojis)]))))
+        await ctx.send(emojis[index_wanted])
 
 
-@client.command()
-async def upload_emoji(ctx, args):
-    if ctx.message.author.id == 517998886141558786:
-        try:
-            _name = args[2:-1].split(":")[0]
-            _id = args[2:-1].split(":")[1]
-            emojis.append(Emoji(_name, _id))
-            await ctx.send(f"`Emoji uploaded.`<:{_name}:{_id}>` at index {len(emojis) - 1}`")
-            return
-        except IndexError:
-            message = await ctx.send("Unable to upload that emoji.")
-    else:
-        message = await ctx.send("`You aren't `<@517998886141558786>`, you don't have permission to use this command.`")
-    await message.delete(delay=3)
-    save()
-
-
-@client.command()
-async def remove_emoji(ctx, args="none"):
-    if ctx.message.author.id == 517998886141558786:
-        if args != "none":
-            try:
-                index_wanted = int(args)
-                try:
-                    wanted_emoji = emojis[index_wanted]
-                    emojis.remove(wanted_emoji)
-                    await ctx.send(f"{wanted_emoji.get_emoji()}`has been removed from the list.`")
-                    return
-                except IndexError:
-                    message = await ctx.send("`Index out of range.`")
-            except ValueError:
-                message = await ctx.send("`Parameter is not an int.`")
-        else:
-            message = await ctx.send("`Parameter not given.`")
-    else:
-        message = await ctx.send("`You aren't `<@517998886141558786>`, you don't have permission to use this command.`")
-    await message.delete(delay=3)
-    save()
 
 
 client.run(BotToken)
