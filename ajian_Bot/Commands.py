@@ -1,6 +1,7 @@
 import Formatting
 import Dependencies
 import discord
+from mcstatus import MinecraftServer
 
 
 async def delayed_delete(message, delay=3):
@@ -16,12 +17,14 @@ def verify_user(ctx):
     if ctx.message.author.id == Dependencies.author_id:
         return True
 
-def find_in_message(content,target):
+
+def find_in_message(content, target):
     info = ""
     for x in content:
         if x[0:len(target)] == target:
-            info = x[len(target)+1:]
+            info = x[len(target) + 1:]
     return info
+
 
 def init(client):
     @client.command()
@@ -68,7 +71,7 @@ def init(client):
         )))
         print(int((int(Formatting.get_ping_colour(287)[0])) + (int(Formatting.get_ping_colour(287)[1]) * 256)))
 
-    @client.command(pass_context=True, hidden=True)
+    @client.command(hidden=True)
     async def change_stat(ctx, args):
         if args in ['do', 'on', 'id', 'in']:
             if args == 'do':
@@ -123,7 +126,7 @@ def init(client):
         for x in ctx.message.guild.emojis:
             if x not in Dependencies.emojis:
                 Dependencies.emojis.append(x)
-        await delayed_delete(await ctx.send(f"Gathering done - [{len(Dependencies.emojis)-old}]"))
+        await delayed_delete(await ctx.send(f"Gathering done - [{len(Dependencies.emojis) - old}]"))
 
     @client.command()
     async def emoji_list(ctx, args="0"):
@@ -150,16 +153,15 @@ def init(client):
             )
         await dispose_message(await ctx.send(embed=final))
 
-
     @client.command()
     async def embed(ctx, *args):
         await ctx.message.delete()
         args = list(args)
         title = find_in_message(args, "title")
         description = find_in_message(args, "description")
-        footer = find_in_message(args,"footer")
+        footer = find_in_message(args, "footer")
         try:
-            colour = int(find_in_message(args,"colour"))
+            colour = int(find_in_message(args, "colour"))
         except ValueError:
             colour = Formatting.colour()
         if ctx.message.attachments:
@@ -180,3 +182,25 @@ def init(client):
 
         if disposable:
             await dispose_message(msg)
+
+    @client.command()
+    async def server_info(ctx):
+        try:
+            server = MinecraftServer.lookup("147.135.71.70:25592")
+            if server.status() is None:
+                description = f"IP : `147.135.71.70:25592`\n"
+                line = "⚫"
+            else:
+                mc_status = server.status()
+                description = f"**IP :** `147.135.71.70:25592`\n" \
+                              f"**Version :** {mc_status.version.name}\n" \
+                              f"**Latency :** {mc_status.latency}\n" \
+                              f"**Players :** {mc_status.players.online}/{mc_status.players.max}\n"
+                line = "🟢"
+            final = discord.Embed(title=f"{line}  **FailureSMP**",
+                                description=description,
+                                  color=Formatting.colour())
+        except:
+            final = discord.Embed(title="_FailureSMP cannot be pinged at the moment._",
+                                  description="Please try again in the near future.")
+        await ctx.send(embed=final)
