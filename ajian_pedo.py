@@ -1,11 +1,16 @@
 import discord
 from discord.ext import commands
+from pathlib import Path
+import pickle
+
 
 client = commands.Bot(command_prefix="--")
-guarding = False
+save_file_path = Path(".")/"ajian_pedo_Data"
 
+guarding = False
 guarded_users = []
-guarded_channels = [849244889942196225]
+guarded_channels = []
+bot_token = pickle.load(open(f"{save_file_path}/ajian_pedo - Token","rb"))
 
 
 async def set_presence():
@@ -114,4 +119,4 @@ async def fetch_guarded_channels(ctx):
     await ctx.send(embed=final)
 
 # Implement saving and loading for token and etc later
-client.run("")
+client.run(bot_token)
