@@ -114,4 +114,4 @@ async def fetch_guarded_channels(ctx):
     await ctx.send(embed=final)
 
 # Implement saving and loading for token and etc later
-client.run("")
+client.run("ODU5MjY5Mjc1NjAwNjgzMDQ5.YNqO3w.PWorOI0UhO4ekwBIwx9BhAjPKH0")
