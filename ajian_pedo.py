@@ -3,14 +3,36 @@ from discord.ext import commands
 from pathlib import Path
 import pickle
 
-
 client = commands.Bot(command_prefix="--")
-save_file_path = Path(".")/"ajian_pedo_Data"
+save_file_path = Path(".") / "ajian_pedo_Data"
 
+
+def load(file_path, default):
+    try:
+        final = pickle.load(open(f"{save_file_path}/{file_path}", "rb"))
+    except FileNotFoundError:
+        final = default
+        pickle.dump(final, open(f"{save_file_path}/{file_path}", "wb"))
+    return final
+
+
+def verified_user(ctx):
+    return ctx.message.author.id in powered_users
+
+
+# Users that have access to the bot's commands
+powered_users = load("ajian_pedo - Powered Users", [517998886141558786, 859005581414236160])
+
+# If the bot is guarding or not
 guarding = False
-guarded_users = []
-guarded_channels = []
-bot_token = pickle.load(open(f"{save_file_path}/ajian_pedo - Token","rb"))
+
+# Users that are allowed into guarded channels
+guarded_users = load("ajian_pedo - Guarded Users", [517998886141558786, 859005581414236160])
+
+# Channels that are guarded
+guarded_channels = load("ajian_pedo - Guarded Channels", [])
+
+bot_token = pickle.load(open(f"{save_file_path}/ajian_pedo - Token", "rb"))
 
 
 async def set_presence():
@@ -29,6 +51,7 @@ async def on_ready():
 async def guard(ctx):
     global guarding
     guarding = not guarding
+    await ctx.message.delete()
     await set_presence()
 
 
@@ -48,6 +71,7 @@ async def on_voice_state_update(member, before, after):
 
 @client.command()
 async def guard_user(ctx, user_id):
+    if not verified_user(ctx): return
     try:
         wanted_user = int(user_id)
         if wanted_user not in guarded_users:
@@ -57,34 +81,35 @@ async def guard_user(ctx, user_id):
             final = "User is already guarded."
     except ValueError:
         final = "Inputted ID was not a valid number."
-    await (await ctx.send(final).delete(delay=3))
+    await (await ctx.send(final)).delete(delay=3)
 
 
 @client.command()
 async def unguard_user(ctx, user_id):
+    if not verified_user(ctx): return
     try:
         wanted_user = int(user_id)
         if wanted_user in guarded_users:
             guarded_users.remove(wanted_user)
-            final = "User successfully removed."
+            final = "User successfully unguarded."
         else:
             final = "User was not found."
     except ValueError:
         final = "Inputted ID was not a valid number."
-    await (await ctx.send(final).delete(delay=3))
+    await (await ctx.send(final)).delete(delay=3)
 
 
 @client.command()
 async def fetch_guarded_users(ctx):
     newline = "\n"
     final = discord.Embed(title="**Guarded Users**",
-                          description=newline.join([f" - {x}" for x in guarded_users]))
+                          description=newline.join([f" - <@{x}>" for x in guarded_users]))
     await ctx.send(embed=final)
-
 
 
 @client.command()
 async def guard_channel(ctx, channel_id):
+    if not verified_user(ctx): return
     try:
         wanted_channel = int(channel_id)
         if wanted_channel not in guarded_channels:
@@ -94,29 +119,68 @@ async def guard_channel(ctx, channel_id):
             final = "Channel is already guarded."
     except ValueError:
         final = "Inputted ID was not a valid number."
-    await (await ctx.send(final).delete(delay=3))
+    await (await ctx.send(final)).delete(delay=3)
 
 
 @client.command()
 async def unguard_channel(ctx, channel_id):
+    if not verified_user(ctx): return
     try:
         wanted_channel = int(channel_id)
-        if wanted_channel not in guarded_channels:
+        if wanted_channel in guarded_channels:
             guarded_channels.remove(wanted_channel)
             final = "Channel successfully unguarded."
         else:
             final = "Channel is already unguarded."
     except ValueError:
         final = "Inputted ID was not a valid number."
-    await (await ctx.send(final).delete(delay=3))
+    await (await ctx.send(final)).delete(delay=3)
 
 
 @client.command()
 async def fetch_guarded_channels(ctx):
     newline = "\n"
     final = discord.Embed(title="**Guarded Channels**",
-                          description=newline.join([f" - {x}" for x in guarded_channels]))
+                          description=newline.join([f" - <#{x}>" for x in guarded_channels]))
     await ctx.send(embed=final)
 
-# Implement saving and loading for token and etc later
+
+@client.command()
+async def power_user(ctx, user_id):
+    if not verified_user(ctx): return
+    try:
+        wanted_user = int(user_id)
+        if wanted_user not in powered_users:
+            powered_users.append(wanted_user)
+            final = "User successfully powered."
+        else:
+            final = "User was not found."
+    except ValueError:
+        final = "Inputted ID was not a valid number."
+    await (await ctx.send(final)).delete(delay=3)
+
+
+@client.command()
+async def unpower_user(ctx, user_id):
+    if not verified_user(ctx): return
+    try:
+        wanted_user = int(user_id)
+        if wanted_user in powered_users:
+            powered_users.remove(wanted_user)
+            final = "User successfully removed."
+        else:
+            final = "User was not found."
+    except ValueError:
+        final = "Inputted ID was not a valid number."
+    await (await ctx.send(final)).delete(delay=3)
+
+
+@client.command()
+async def fetch_powered_users(ctx):
+    newline = "\n"
+    final = discord.Embed(title="**Powered Users**",
+                          description=newline.join([f" - <@{x}>" for x in powered_users]))
+    await ctx.send(embed=final)
+
+
 client.run(bot_token)
