@@ -35,6 +35,12 @@ guarded_channels = load("ajian_pedo - Guarded Channels", [])
 bot_token = pickle.load(open(f"{save_file_path}/ajian_pedo - Token", "rb"))
 
 
+def save():
+    pickle.dump(guarded_channels, open(f"{save_file_path}/ajian_pedo - Guarded Channels"))
+    pickle.dump(guarded_channels, open(f"{save_file_path}/ajian_pedo - Guarded Users"))
+    pickle.dump(guarded_channels, open(f"{save_file_path}/ajian_pedo - Powered Users"))
+
+
 async def set_presence():
     if guarding:
         await client.change_presence(activity=discord.Game(name="Guarding"))
@@ -83,6 +89,7 @@ async def guard_user(ctx, user_id):
     except ValueError:
         final = "Inputted ID was not a valid number."
     await (await ctx.send(final)).delete(delay=3)
+    save()
 
 
 @client.command()
@@ -99,6 +106,7 @@ async def unguard_user(ctx, user_id):
     except ValueError:
         final = "Inputted ID was not a valid number."
     await (await ctx.send(final)).delete(delay=3)
+    save()
 
 
 @client.command()
@@ -123,6 +131,7 @@ async def guard_channel(ctx, channel_id):
     except ValueError:
         final = "Inputted ID was not a valid number."
     await (await ctx.send(final)).delete(delay=3)
+    save()
 
 
 @client.command()
@@ -139,6 +148,7 @@ async def unguard_channel(ctx, channel_id):
     except ValueError:
         final = "Inputted ID was not a valid number."
     await (await ctx.send(final)).delete(delay=3)
+    save()
 
 
 @client.command()
@@ -163,6 +173,7 @@ async def power_user(ctx, user_id):
     except ValueError:
         final = "Inputted ID was not a valid number."
     await (await ctx.send(final)).delete(delay=3)
+    save()
 
 
 @client.command()
@@ -179,6 +190,7 @@ async def unpower_user(ctx, user_id):
     except ValueError:
         final = "Inputted ID was not a valid number."
     await (await ctx.send(final)).delete(delay=3)
+    save()
 
 
 @client.command()
