@@ -37,8 +37,8 @@ bot_token = pickle.load(open(f"{save_file_path}/ajian_pedo - Token", "rb"))
 
 def save():
     pickle.dump(guarded_channels, open(f"{save_file_path}/ajian_pedo - Guarded Channels", "wb"))
-    pickle.dump(guarded_channels, open(f"{save_file_path}/ajian_pedo - Guarded Users", "wb"))
-    pickle.dump(guarded_channels, open(f"{save_file_path}/ajian_pedo - Powered Users", "wb"))
+    pickle.dump(guarded_users, open(f"{save_file_path}/ajian_pedo - Guarded Users", "wb"))
+    pickle.dump(powered_users, open(f"{save_file_path}/ajian_pedo - Powered Users", "wb"))
 
 
 async def set_presence():
