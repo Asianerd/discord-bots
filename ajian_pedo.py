@@ -71,7 +71,8 @@ async def on_voice_state_update(member, before, after):
 
 @client.command()
 async def guard_user(ctx, user_id):
-    if not verified_user(ctx): return
+    if not verified_user(ctx):
+        return
     try:
         wanted_user = int(user_id)
         if wanted_user not in guarded_users:
@@ -86,7 +87,8 @@ async def guard_user(ctx, user_id):
 
 @client.command()
 async def unguard_user(ctx, user_id):
-    if not verified_user(ctx): return
+    if not verified_user(ctx):
+        return
     try:
         wanted_user = int(user_id)
         if wanted_user in guarded_users:
@@ -109,7 +111,8 @@ async def fetch_guarded_users(ctx):
 
 @client.command()
 async def guard_channel(ctx, channel_id):
-    if not verified_user(ctx): return
+    if not verified_user(ctx):
+        return
     try:
         wanted_channel = int(channel_id)
         if wanted_channel not in guarded_channels:
@@ -124,7 +127,8 @@ async def guard_channel(ctx, channel_id):
 
 @client.command()
 async def unguard_channel(ctx, channel_id):
-    if not verified_user(ctx): return
+    if not verified_user(ctx):
+        return
     try:
         wanted_channel = int(channel_id)
         if wanted_channel in guarded_channels:
@@ -147,7 +151,8 @@ async def fetch_guarded_channels(ctx):
 
 @client.command()
 async def power_user(ctx, user_id):
-    if not verified_user(ctx): return
+    if not verified_user(ctx):
+        return
     try:
         wanted_user = int(user_id)
         if wanted_user not in powered_users:
@@ -162,7 +167,8 @@ async def power_user(ctx, user_id):
 
 @client.command()
 async def unpower_user(ctx, user_id):
-    if not verified_user(ctx): return
+    if not verified_user(ctx):
+        return
     try:
         wanted_user = int(user_id)
         if wanted_user in powered_users:
