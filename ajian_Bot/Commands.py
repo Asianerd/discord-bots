@@ -2,6 +2,8 @@ import Formatting
 import Dependencies
 import discord
 from mcstatus import MinecraftServer
+from uptime import uptime
+import psutil
 
 
 async def delayed_delete(message, delay=3):
@@ -204,3 +206,28 @@ def init(client):
             final = discord.Embed(title="_FailureSMP cannot be pinged at the moment._",
                                   description="Please try again in the near future.")
         await ctx.send(embed=final)
+
+    @client.command()
+    async def server_status(ctx):
+        await ctx.message.delete()
+        _mem = psutil.virtual_memory()
+        final = discord.Embed(
+            title="__**Server Status**__",
+            description=f"**Latency**\n"
+                        f"{round(client.latency * 1000, 2)}ms\n"
+                        f"\n"
+                        f"**CPU Usage**\n"
+                        f"**`Used`** : {round(psutil.cpu_percent(), 2)}%\n"
+                        f"\n"
+                        f"**Memory usage**\n"
+                        f"**`Total`** : {int(_mem.total / 1048576)} MiB\n"
+                        f"**` Used`**  : {int(_mem.used / 1048576)} MiB   | _({int((_mem.used / _mem.total) * 100)}%)_\n"
+                        f"**` Free`**  : {int(_mem.free / 1048576)} MiB   | _({int((_mem.free / _mem.total) * 100)}%)_\n\n"
+                        f"**Server Uptime**\n"
+                        f"{Formatting.uptime_string(uptime())}",
+            color=int(
+                int(Formatting.dynamic_color(_mem.used / _mem.total)[0] * 65536) + int(
+                    Formatting.dynamic_color(_mem.used / _mem.total)[1] * 256)
+            )
+        )
+        await dispose_message(await ctx.send(embed=final))
