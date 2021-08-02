@@ -32,6 +32,9 @@ guarded_users = load("ajian_pedo - Guarded Users", [517998886141558786, 85900558
 # Channels that are guarded
 guarded_channels = load("ajian_pedo - Guarded Channels", [])
 
+# If the bot replies everything with 'didnt ask'
+annoying = True
+
 bot_token = pickle.load(open(f"{save_file_path}/ajian_pedo - Token", "rb"))
 
 
@@ -74,6 +77,19 @@ async def on_voice_state_update(member, before, after):
     except AttributeError:
         pass
 
+
+@client.event
+async def on_message(message):
+    if (not message.author.bot) and (annoying):
+        await message.reply('didnt ask')
+    await client.process_commands(message)
+
+
+@client.command()
+async def toggle_annoy(ctx):
+    global annoying
+    annoying = not annoying
+    await (await ctx.send(f"Annoying : {annoying}")).delete(delay=3)
 
 @client.command()
 async def guard_user(ctx, user_id):
