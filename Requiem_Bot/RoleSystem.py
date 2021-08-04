@@ -1,4 +1,4 @@
-from .. import Data, Command
+import Command, Data
 
 role_system_servers = {
     500614426051739669: "Retards",
