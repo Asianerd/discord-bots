@@ -1,7 +1,6 @@
 import Data
 import discord
-from Commands import Experience, RoleSystem
-
+import Experience, RoleSystem
 
 async def dispose_message(message):
     Data.disposable_messages.append(message)
@@ -14,8 +13,6 @@ def init(client):
     @client.command()
     async def ping(ctx):
         _ping = int(client.latency*1000)
-        print(_ping)
-        print(Data.get_ping_colour(_ping))
         final = discord.Embed(title=f"**Ping :**{_ping}",
                               color=int((Data.get_ping_colour(_ping)[0]) + (Data.get_ping_colour(_ping)[1] * 256)
                               ))
