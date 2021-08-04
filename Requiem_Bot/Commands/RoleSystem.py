@@ -1,4 +1,4 @@
-from Requiem_Bot import Data, Command
+from .. import Data, Command
 
 role_system_servers = {
     500614426051739669: "Retards",
