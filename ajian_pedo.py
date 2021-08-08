@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from pathlib import Path
 import pickle
+import random
 
 client = commands.Bot(command_prefix="--")
 save_file_path = Path(".") / "ajian_pedo_Data"
@@ -32,7 +33,7 @@ guarded_users = load("ajian_pedo - Guarded Users", [517998886141558786, 85900558
 # Channels that are guarded
 guarded_channels = load("ajian_pedo - Guarded Channels", [])
 
-# If the bot replies everything with 'didnt ask'
+# If the bot replies everything with 'didnt ask', retardifies the message, or anything else
 annoying = True
 
 bot_token = pickle.load(open(f"{save_file_path}/ajian_pedo - Token", "rb"))
@@ -49,6 +50,18 @@ async def set_presence():
         await client.change_presence(activity=discord.Game(name="Guarding"))
     else:
         await client.change_presence(activity=None)
+
+
+def retardify(message):
+    final = ""
+    _trigger = False
+    for x in message.lower():
+        if _trigger:
+            final += x
+        else:
+            final += x.upper()
+        _trigger = not _trigger
+    return final
 
 
 @client.event
@@ -81,7 +94,8 @@ async def on_voice_state_update(member, before, after):
 @client.event
 async def on_message(message):
     if (not message.author.bot) and (annoying):
-        await message.reply('didnt ask')
+        final = ['didnt ask', retardify(message.content)][random.randint(0, 1)]
+        await message.reply(final)
     await client.process_commands(message)
 
 
@@ -90,6 +104,7 @@ async def toggle_annoy(ctx):
     global annoying
     annoying = not annoying
     await (await ctx.send(f"Annoying : {annoying}")).delete(delay=3)
+
 
 @client.command()
 async def guard_user(ctx, user_id):

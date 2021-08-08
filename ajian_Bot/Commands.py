@@ -71,7 +71,6 @@ def init(client):
             color=int((int(Formatting.get_ping_colour(int(client.latency * 1000))[0])) + (
                     int(Formatting.get_ping_colour(int(client.latency * 1000))[1]) * 256))
         )))
-        print(int((int(Formatting.get_ping_colour(287)[0])) + (int(Formatting.get_ping_colour(287)[1]) * 256)))
 
     @client.command(hidden=True)
     async def change_stat(ctx, args):
@@ -128,6 +127,7 @@ def init(client):
         for x in ctx.message.guild.emojis:
             if x not in Dependencies.emojis:
                 Dependencies.emojis.append(x)
+        Dependencies.save()
         await delayed_delete(await ctx.send(f"Gathering done - [{len(Dependencies.emojis) - old}]"))
 
     @client.command()
@@ -231,3 +231,28 @@ def init(client):
             )
         )
         await dispose_message(await ctx.send(embed=final))
+
+    @client.command()
+    async def phurge(ctx, args):
+        try:
+            amount = int(args) + 1
+            await ctx.message.channel.purge(limit=amount)
+        except ValueError:
+            await (await ctx.send(f'`Purge amount argument incorrect.`')).delete(delay=3)
+
+    @client.command()
+    async def oos(ctx, deletable="none"):
+        msg = await ctx.send(
+        '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+        '‎‎\n‎ '
+        '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+        '‎‎\n '
+        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+        '‎‎\n '
+        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+        '‎‎\n‎‎\n‎‎\n‎')
+        if deletable != "none":
+            await dispose_message(msg)

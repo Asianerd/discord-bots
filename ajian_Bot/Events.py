@@ -1,4 +1,5 @@
 import Dependencies
+import alexa_reply
 
 
 def contains_emote(message):
@@ -10,12 +11,13 @@ def locate_emote(message):
         start_index = message.index(">[")
         end_index = message.index("]")
     except ValueError:
-        return False, None, (0,0)
-    emote_name = str(message[(start_index+2):end_index]).strip()
+        return False, None, (0, 0)
+    emote_name = str(message[(start_index + 2):end_index]).strip()
     if emote_name in [x.name for x in Dependencies.emojis]:
-        return True, Dependencies.emojis[([x.name for x in Dependencies.emojis].index(emote_name))], (start_index, end_index+1)
+        return True, Dependencies.emojis[([x.name for x in Dependencies.emojis].index(emote_name))], (
+        start_index, end_index + 1)
     else:
-        return False, None, (0,0)
+        return False, None, (0, 0)
 
 
 def init(client):
@@ -33,10 +35,15 @@ def init(client):
             if emote[0]:
                 await message.channel.send(f"{message.content[0:emote[2][0]]}{emote[1]}{message.content[emote[2][1]:]}")
             return
-        if (message.content not in Dependencies.unsendable_content) and Dependencies.send_messages:
+        if (message.content not in Dependencies.unsendable_content) and Dependencies.send_messages and (
+                message.content[0] != Dependencies.command_prefix):
             if message.author.id == Dependencies.author_id:
                 await message.delete()
                 await message.channel.send(message.content)
+        if message.content[0:5] == "ajuna":
+            target = message.content[6::]
+            reply = alexa_reply.reply(target, "ajuna_loli", message.author.name)
+            await message.channel.send(reply)
         await client.process_commands(message)
 
     @client.event
