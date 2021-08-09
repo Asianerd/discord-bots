@@ -94,7 +94,13 @@ async def on_voice_state_update(member, before, after):
 @client.event
 async def on_message(message):
     if (not message.author.bot) and (annoying):
-        final = ['didnt ask', retardify(message.content)][random.randint(0, 1)]
+        final = [
+            'didnt ask',
+            retardify(message.content),
+            'skill issue',
+            'sounds like a you problem',
+            'k'
+        ][random.randint(0, 4)]
         await message.reply(final)
     await client.process_commands(message)
 
