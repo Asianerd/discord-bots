@@ -43,7 +43,7 @@ def init(client):
         if message.content[0:5] == "ajuna":
             target = message.content[6::]
             reply = alexa_reply.reply(target, "ajuna_loli", message.author.name)
-            await message.channel.send(reply)
+            await message.reply(reply)
         await client.process_commands(message)
 
     @client.event
