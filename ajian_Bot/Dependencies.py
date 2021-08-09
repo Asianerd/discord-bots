@@ -13,13 +13,15 @@ reactions = ["\N{WASTEBASKET}"]
 
 
 def save():
-    pickle.dump(emojis, open(f"{save_file_path}/asian - Emojis", "wb"))
+    #pickle.dump(emojis, open(f"{save_file_path}/asian - Emojis", "wb"))
+    pass
 
 
 def load():
     global emojis
     try:
-        return pickle.load(open(f"{save_file_path}/asian - Emojis", "rb"))
+        #return pickle.load(open(f"{save_file_path}/asian - Emojis", "rb"))
+        pass
     except FileNotFoundError:
         emojis = []
         save()
