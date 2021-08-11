@@ -1,6 +1,7 @@
 import Formatting
 import Dependencies
 import discord
+from discord.ext.commands import has_permissions
 from mcstatus import MinecraftServer
 from uptime import uptime
 import psutil
@@ -233,6 +234,7 @@ def init(client):
         await dispose_message(await ctx.send(embed=final))
 
     @client.command()
+    @has_permissions(manage_messages=True)
     async def phurge(ctx, args):
         try:
             amount = int(args) + 1
@@ -241,6 +243,7 @@ def init(client):
             await (await ctx.send(f'`Purge amount argument incorrect.`')).delete(delay=3)
 
     @client.command()
+    @has_permissions(manage_messages=True)
     async def oos(ctx, deletable="none"):
         msg = await ctx.send(
         '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'

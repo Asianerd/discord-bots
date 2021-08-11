@@ -3,6 +3,7 @@ from discord.ext import commands
 from pathlib import Path
 import pickle
 import random
+import asyncio
 
 client = commands.Bot(command_prefix="--")
 save_file_path = Path(".") / "ajian_pedo_Data"
@@ -34,7 +35,7 @@ guarded_users = load("ajian_pedo - Guarded Users", [517998886141558786, 85900558
 guarded_channels = load("ajian_pedo - Guarded Channels", [])
 
 # If the bot replies everything with 'didnt ask', retardifies the message, or anything else
-annoying = True
+annoying = False
 
 bot_token = pickle.load(open(f"{save_file_path}/ajian_pedo - Token", "rb"))
 
@@ -236,6 +237,5 @@ async def fetch_powered_users(ctx):
     final = discord.Embed(title="**Powered Users**",
                           description=newline.join([f" - <@{x}>" for x in powered_users]))
     await ctx.send(embed=final)
-
 
 client.run(bot_token)
