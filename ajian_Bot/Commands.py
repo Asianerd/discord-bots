@@ -256,3 +256,13 @@ def init(client):
         '‎‎\n‎‎\n‎‎\n‎')
         if deletable != "none":
             await dispose_message(msg)
+
+    @client.command()
+    async def github(ctx):
+        final = discord.Embed(
+            title="**Github**",
+            description="`discord-bots` : https://github.com/Asianerd/discord-bots\nInvite link : https://discord.com/api/oauth2/authorize?client_id=736626038397861988&permissions=8&scope=bot",
+            color=Formatting.colour()
+        )
+        final.set_footer(text="You can contribute by starring my repos!")
+        await ctx.send(embed=final)
