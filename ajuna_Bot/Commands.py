@@ -269,3 +269,30 @@ def init(client):
         )
         final.set_footer(text="You can contribute by starring my repos!")
         await ctx.send(embed=final)
+
+    @client.command()
+    async def shut_down(ctx):
+        if ctx.message.author.id in Dependencies.authorized_users:
+            await ctx.send("ajuna_loli shutting down!")
+            await client.logout()
+        else:
+            await delayed_delete(await ctx.send(embed=discord.Embed(title="**You are not an authorized user.**",color=Formatting.colour())), 3)
+
+    @client.command()
+    async def to_ascii(ctx):
+        if ctx.message.attachments:
+            image_attachment = ctx.message.attachments[0]
+        else:
+            await delayed_delete(await ctx.send(embed=discord.Embed(title="**Image not attached!**",color=Formatting.colour())), 3)
+            return
+        if not (any(image_attachment.filename.lower().endswith(x) for x in 'png/jpg/jpeg'.split("/"))):
+            await delayed_delete(await ctx.send(embed=discord.Embed(title="**File format not supported.**", color=Formatting.colour())), 3)
+            return
+
+        await image_attachment.save("_.ajuna - ToAscii.png")
+        final = Formatting.convert_pixels_to_ascii()
+        image_file = open("_.ajuna - AsciiOutput.txt","w")
+        image_file.write(final)
+        image_file.close()
+        image_file = discord.File("_.ajuna - AsciiOutput.txt")
+        await ctx.send(file=image_file,content="**Ascii'd Image**")

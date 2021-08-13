@@ -23,7 +23,7 @@ def locate_emote(message):
 def init(client):
     @client.event
     async def on_ready():
-        print("ajian_nedo is awake!")
+        print("ajuna_loli is awake!")
 
     @client.event
     async def on_message(message):

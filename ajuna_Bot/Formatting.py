@@ -1,5 +1,6 @@
 import pickle
 import random
+from PIL import Image
 
 
 def colour(_random=False):
@@ -26,7 +27,7 @@ def dynamic_color(i):
     """Enter a float from 0-1 and will return red and green values accordingly,
     with 0 being fully green and 1 being fully red"""
     r = 255 * i
-    g = 255 * (1-i)
+    g = 255 * (1 - i)
 
     if r > 255:
         r = 255
@@ -50,3 +51,28 @@ def uptime_string(enoch_time):
         minute = enoch_time / 60
         second = enoch_time - (int(minute) * 60)
         return f"{int(minute)}m {int(second)}s"
+
+
+"""Image-related formatting"""
+
+
+def resize_image(image, new_width=100):
+    width, height = image.size
+    ratio = height / width / 1.65
+    new_height = int(new_width * ratio)
+    return image.resize((new_width, new_height))
+
+
+def pixels_to_ascii(image):
+    ascii_characters = ["@", "#", "S", "%", "?", "*", "+", ";", ":", ",", "."]
+    ascii_characters.reverse()
+    return "".join([ascii_characters[pixel // 25] for pixel in image.getdata()])
+
+
+def convert_pixels_to_ascii(): # This is the main function, use this
+    to_ascii_path = "_.ajuna - ToAscii.png"
+    image = Image.open(to_ascii_path)
+    new_image_data = pixels_to_ascii(resize_image(image).convert("L"))
+    pixel_count = len(new_image_data)
+    ascii_image = "\n".join([new_image_data[index:(index + 100)] for index in range(0, pixel_count, 100)])
+    return ascii_image

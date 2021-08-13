@@ -13,10 +13,10 @@ client = commands.Bot(command_prefix=Dependencies.command_prefix)
 Events.init(client)
 """
 discord-bots
-    - <dir> asian_Data
-    - <dir> ajian_nedo
+    - <dir> ajuna_Data
+    - <dir> ajuna_loli
 """
-bot_token = pickle.load(open(f"{Dependencies.save_file_path}/asian - Token", "rb"))
+bot_token = pickle.load(open(f"{Dependencies.save_file_path}/ajuna - Token", "rb"))
 
 Commands.init(client)
 
