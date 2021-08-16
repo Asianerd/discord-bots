@@ -13,18 +13,54 @@ def server(guild_id):
         return False
 
 
+def all_stands(ctx):
+    final = [f" {x.rjust(6, ' ')} : {ctx.guild.get_role(Data.stand_roles[x][0])}" for x in Data.stand_roles]
+    return '```' + "\n".join(final) + '```'
+
+
+def all_styles(ctx):
+    final = [f" {x.rjust(6, ' ')} : {ctx.guild.get_role(Data.fighting_style_roles[x][0])}" for x in
+             Data.fighting_style_roles]
+    return '```' + "\n".join(final) + '```'
+
+
 def init(client):
     @client.command()
     async def stand(ctx, args):
         if server(ctx.guild.id) == "Mushroom":
             stand_wanted = args
-            role = ctx.guild.get_role(Data.stand_roles[stand_wanted][0])
-            await ctx.message.author.add_roles(role)
-            await ctx.send(f"The role, {role}, has been assigned.")
+            if stand_wanted in [x for x in Data.stand_roles.keys()]:
+                role = ctx.guild.get_role(Data.stand_roles[stand_wanted][0])
+                await ctx.message.author.add_roles(role)
+                await ctx.send(f"The role, {role}, has been assigned.")
+            else:
+                await ctx.send(f"Stand, {args}, was not found.")
+                final = all_stands(ctx)
+                await ctx.send(final)
         else:
-            await Command.dispose_message(await ctx.send("Seems like youre using this in the wrong server :thinking:"))
+            await Command.dispose_message(await ctx.send("Seems like you're using this in the wrong server :thinking:"))
 
     @client.command()
-    async def fetch_stands(ctx):
-        final = [f" {x.rjust(6,' ')} : {ctx.guild.get_role(Data.stand_roles[x][0])}" for x in Data.stand_roles]
-        await ctx.send('```'+"\n".join(final)+'```')
+    async def stands(ctx):
+        final = all_stands(ctx)
+        await ctx.send(final)
+
+    @client.command()
+    async def styles(ctx):
+        final = all_styles(ctx)
+        await ctx.send(final)
+
+    @client.command()
+    async def style(ctx, args):
+        if server(ctx.guild.id) == "Mushroom":
+            style_wanted = args
+            if style_wanted in [x for x in Data.fighting_style_roles.keys()]:
+                role = ctx.guild.get_role(Data.fighting_style_roles[style_wanted][0])
+                await ctx.message.author.add_roles(role)
+                await ctx.send(f"The role, {role}, has been assigned.")
+            else:
+                await ctx.send(f"Fighting style, {args}, was not found.")
+                final = all_styles(ctx)
+                await ctx.send(final)
+        else:
+            await Command.dispose_message(await ctx.send("Seems like you're using this in the wrong server :thinking:"))
