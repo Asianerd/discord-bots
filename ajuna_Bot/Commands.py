@@ -5,6 +5,7 @@ from discord.ext.commands import has_permissions
 from mcstatus import MinecraftServer
 from uptime import uptime
 import psutil
+import random
 
 
 async def delayed_delete(message, delay=3):
@@ -296,3 +297,13 @@ def init(client):
         image_file.close()
         image_file = discord.File("_.ajuna - AsciiOutput.txt")
         await ctx.send(file=image_file,content="**Ascii'd Image**")
+
+    @client.command()
+    async def cube(ctx):
+        final = []
+        moves = 'R L U D F B R` L` U` D` F` B`'.split()
+        while len(final) < 8:
+            wanted = random.choice(moves)
+            if wanted not in final[-3::]:
+                final.append(wanted)
+        await ctx.send('```\n'+" ".join(final)+'```')
