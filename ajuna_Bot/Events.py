@@ -41,8 +41,6 @@ def init(client):
                 await message.delete()
                 await message.channel.send(message.content)
         if message.content[0:5] == "ajuna":
-            async with message.channel.typing():
-                await asyncio.sleep(1)
             target = message.content[6::]
             reply = alexa_reply.reply(target, "ajuna_loli", "<@517998886141558786>")
             await message.reply(reply)
