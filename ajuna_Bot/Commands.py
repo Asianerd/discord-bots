@@ -301,9 +301,9 @@ def init(client):
     @client.command()
     async def cube(ctx):
         final = []
-        moves = 'R L U D F B R` L` U` D` F` B`'.split()
+        moves = "R L U D F B R' L' U' D' F' B'".split()
         while len(final) < 8:
             wanted = random.choice(moves)
-            if wanted not in final[-3::]:
+            if wanted[0] not in [x[0] for x in final[-3::]]:
                 final.append(wanted)
-        await ctx.send('```\n'+" ".join(final)+'```')
+        await ctx.send('`'+" ".join(final)+'`')
