@@ -40,7 +40,7 @@ def init(client):
             if message.author.id == Dependencies.author_id:
                 await message.delete()
                 await message.channel.send(message.content)
-        if message.content[0:5] == "ajuna":
+        if message.content[0:5].lower() == "ajuna":
             target = message.content[6::]
             reply = alexa_reply.reply(target, "ajuna_loli", "<@517998886141558786>")
             await message.reply(reply)
