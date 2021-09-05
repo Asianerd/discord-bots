@@ -50,7 +50,7 @@ async def toggle(ctx):
         await ctx.message.delete()
     except:
         pass
-    if ctx.message.author.id == owner_id:
+    if ctx.message.author.id in powered:
         toggled = not toggled
 
 
