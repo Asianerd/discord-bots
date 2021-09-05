@@ -2,6 +2,7 @@ import Dependencies
 import alexa_reply
 import asyncio
 
+
 def contains_emote(message):
     return ">[" in message
 
@@ -15,7 +16,7 @@ def locate_emote(message):
     emote_name = str(message[(start_index + 2):end_index]).strip()
     if emote_name in [x.name for x in Dependencies.emojis]:
         return True, Dependencies.emojis[([x.name for x in Dependencies.emojis].index(emote_name))], (
-        start_index, end_index + 1)
+            start_index, end_index + 1)
     else:
         return False, None, (0, 0)
 

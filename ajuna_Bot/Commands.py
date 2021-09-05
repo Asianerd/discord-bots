@@ -202,7 +202,7 @@ def init(client):
                               f"**Players :** {mc_status.players.online}/{mc_status.players.max}\n"
                 line = "🟢"
             final = discord.Embed(title=f"{line}  **FailureSMP**",
-                                description=description,
+                                  description=description,
                                   color=Formatting.colour())
         except:
             final = discord.Embed(title="_FailureSMP cannot be pinged at the moment._",
@@ -247,17 +247,17 @@ def init(client):
     @has_permissions(manage_messages=True)
     async def oos(ctx, deletable="none"):
         msg = await ctx.send(
-        '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n‎ '
-        '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n '
-        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n '
-        '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-        '‎‎\n‎‎\n‎‎\n‎')
+            '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+            '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+            '‎‎\n‎ '
+            '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+            '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+            '‎‎\n '
+            '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+            '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+            '‎‎\n '
+            '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
+            '‎‎\n‎‎\n‎‎\n‎')
         if deletable != "none":
             await dispose_message(msg)
 
@@ -277,26 +277,30 @@ def init(client):
             await ctx.send("ajuna_loli shutting down!")
             await client.logout()
         else:
-            await delayed_delete(await ctx.send(embed=discord.Embed(title="**You are not an authorized user.**",color=Formatting.colour())), 3)
+            await delayed_delete(await ctx.send(
+                embed=discord.Embed(title="**You are not an authorized user.**", color=Formatting.colour())), 3)
 
     @client.command()
     async def to_ascii(ctx):
         if ctx.message.attachments:
             image_attachment = ctx.message.attachments[0]
         else:
-            await delayed_delete(await ctx.send(embed=discord.Embed(title="**Image not attached!**",color=Formatting.colour())), 3)
+            await delayed_delete(
+                await ctx.send(embed=discord.Embed(title="**Image not attached!**", color=Formatting.colour())), 3)
             return
         if not (any(image_attachment.filename.lower().endswith(x) for x in 'png/jpg/jpeg'.split("/"))):
-            await delayed_delete(await ctx.send(embed=discord.Embed(title="**File format not supported.**", color=Formatting.colour())), 3)
+            await delayed_delete(
+                await ctx.send(embed=discord.Embed(title="**File format not supported.**", color=Formatting.colour())),
+                3)
             return
 
         await image_attachment.save("_.ajuna - ToAscii.png")
         final = Formatting.convert_pixels_to_ascii()
-        image_file = open("_.ajuna - AsciiOutput.txt","w")
+        image_file = open("_.ajuna - AsciiOutput.txt", "w")
         image_file.write(final)
         image_file.close()
         image_file = discord.File("_.ajuna - AsciiOutput.txt")
-        await ctx.send(file=image_file,content="**Ascii'd Image**")
+        await ctx.send(file=image_file, content="**Ascii'd Image**")
 
     @client.command()
     async def cube(ctx):
@@ -306,4 +310,4 @@ def init(client):
             wanted = random.choice(moves)
             if wanted[0] not in [x[0] for x in final[-3::]]:
                 final.append(wanted)
-        await ctx.send('`'+" ".join(final)+'`')
+        await ctx.send('`' + " ".join(final) + '`')
