@@ -24,6 +24,9 @@ def locate_emote(message):
 def init(client):
     @client.event
     async def on_ready():
+        for x in client.emojis:
+            Dependencies.emojis.append(x)
+        print(f"{len(Dependencies.emojis)} emojis gathered")
         print("ajuna_loli is awake!")
 
     @client.event
