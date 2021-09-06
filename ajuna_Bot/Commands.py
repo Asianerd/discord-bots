@@ -123,16 +123,6 @@ def init(client):
         await ctx.send(embed=final)
 
     @client.command()
-    async def fetch_emojis(ctx):
-        await ctx.message.delete()
-        old = len(Dependencies.emojis)
-        for x in ctx.message.guild.emojis:
-            if x not in Dependencies.emojis:
-                Dependencies.emojis.append(x)
-        Dependencies.save()
-        await delayed_delete(await ctx.send(f"Gathering done - [{len(Dependencies.emojis) - old}]"))
-
-    @client.command()
     async def emoji_list(ctx, args="0"):
         await ctx.message.delete()
         try:
@@ -151,10 +141,11 @@ def init(client):
             )
         else:
             final = discord.Embed(
-                title="**Emojis**",
+                title=f"**Emojis ({len(Dependencies.emojis)})**",
                 description=_emojis[index_wanted],
                 colour=Formatting.colour()
             )
+            final.set_footer(text=f"Showing page {index_wanted + 1} out of {len(_emojis)}")
         await dispose_message(await ctx.send(embed=final))
 
     @client.command()
@@ -236,7 +227,7 @@ def init(client):
 
     @client.command()
     @has_permissions(manage_messages=True)
-    async def phurge(ctx, args):
+    async def purge(ctx, args):
         try:
             amount = int(args) + 1
             await ctx.message.channel.purge(limit=amount)
@@ -246,18 +237,7 @@ def init(client):
     @client.command()
     @has_permissions(manage_messages=True)
     async def oos(ctx, deletable="none"):
-        msg = await ctx.send(
-            '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-            '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-            '‎‎\n‎ '
-            '‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-            '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-            '‎‎\n '
-            '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-            '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-            '‎‎\n '
-            '‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n‎‎\n'
-            '‎‎\n‎‎\n‎‎\n‎')
+        msg = await ctx.send("‎\n" * 100)
         if deletable != "none":
             await dispose_message(msg)
 
@@ -265,7 +245,9 @@ def init(client):
     async def github(ctx):
         final = discord.Embed(
             title="**Github**",
-            description="`discord-bots` : https://github.com/Asianerd/discord-bots\nInvite link : https://discord.com/api/oauth2/authorize?client_id=736626038397861988&permissions=8&scope=bot",
+            description="`discord-bots` : https://github.com/Asianerd/discord-bots\n"
+                        "Invite link : https://discord.com/api/oauth2/authorize?"
+                        "client_id=736626038397861988&permissions=8&scope=bot",
             color=Formatting.colour()
         )
         final.set_footer(text="You can contribute by starring my repos!")
@@ -294,13 +276,13 @@ def init(client):
                 3)
             return
 
-        await image_attachment.save("_.ajuna - ToAscii.png")
+        await image_attachment.save_emojis("_.ajuna - ToAscii.png")
         final = Formatting.convert_pixels_to_ascii()
         image_file = open("_.ajuna - AsciiOutput.txt", "w")
         image_file.write(final)
         image_file.close()
         image_file = discord.File("_.ajuna - AsciiOutput.txt")
-        await ctx.send(file=image_file, content="**Ascii'd Image**")
+        await ctx.send(file=image_file, content="**Ascii Image**")
 
     @client.command()
     async def cube(ctx):
