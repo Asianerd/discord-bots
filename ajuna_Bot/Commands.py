@@ -246,8 +246,7 @@ def init(client):
         final = discord.Embed(
             title="**Github**",
             description="`discord-bots` : https://github.com/Asianerd/discord-bots\n"
-                        "Invite link : https://discord.com/api/oauth2/authorize?"
-                        "client_id=736626038397861988&permissions=8&scope=bot",
+                        "Invite link : https://lnk.gdn/vmnt",
             color=Formatting.colour()
         )
         final.set_footer(text="You can contribute by starring my repos!")
