@@ -275,7 +275,7 @@ def init(client):
                 3)
             return
 
-        await image_attachment.save_emojis("_.ajuna - ToAscii.png")
+        await image_attachment.save("_.ajuna - ToAscii.png")
         final = Formatting.convert_pixels_to_ascii()
         image_file = open("_.ajuna - AsciiOutput.txt", "w")
         image_file.write(final)
