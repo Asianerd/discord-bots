@@ -192,6 +192,13 @@ def init(client):
                               f"**Latency :** {mc_status.latency}\n" \
                               f"**Players :** {mc_status.players.online}/{mc_status.players.max}\n"
                 line = "🟢"
+
+                # Fetching players names
+                try:
+                    description += '\n'.join([f" \> {x.name}" for x in mc_status.players.sample])
+                except Exception as e:
+                    print(e)
+
             final = discord.Embed(title=f"{line}  **FailureSMP**",
                                   description=description,
                                   color=Formatting.colour())
