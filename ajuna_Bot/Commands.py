@@ -299,3 +299,17 @@ def init(client):
             if wanted[0] not in [x[0] for x in final[-3::]]:
                 final.append(wanted)
         await ctx.send('`' + " ".join(final) + '`')
+
+    # @client.command()
+    # async def social_credit(ctx, args):
+    #     wanted_credits = 0
+    #     try:
+    #         wanted_credits = int(args[0])
+    #     except:
+    #         pass
+    #     if wanted_credits == 0:
+    #         await ctx.send(":1\\_: :2\\_: :3\\_:\n:4\\_: :5\\_: :6\\_:")
+    #     elif wanted_credits > 0:
+    #         pass
+    #     else:
+    #         pass
