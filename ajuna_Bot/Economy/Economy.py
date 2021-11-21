@@ -2,14 +2,15 @@ import sys
 from . import User
 from . import Task
 import Formatting
+import Dependencies
 import discord
-from discord.ext import commands
+
 sys.path.append("..")
 
 """
 sooo @🅰jian_nedo | Godly @n🅾 i have an idea about bringing a coin system here
 a shop, rewards, achievements, tasks etc
-rewards, achievements, reputation, tasks
+rewards, reputation
 """
 
 
@@ -21,13 +22,39 @@ def init(client):
 
         User.User.update_user_data(message.author.id, message.author.name)
 
-        User.User.update_progress(
+        await User.User.update_progress(
+            message.channel,
             User.User.users[message.author.id],
             Task.Task.TaskType.Message,
             1
         )
 
         await client.process_commands(message)
+
+    @client.event
+    async def on_reaction_add(reaction, _user):
+        if _user.bot:
+            return
+        await User.User.update_progress(
+            reaction.message.channel,
+            User.User.users[_user.id],
+            Task.Task.TaskType.Reaction,
+            1
+        )
+
+    @client.event
+    async def on_voice_state_update(member, before, after):
+        if not after.channel:
+            return
+        User.User.update_user_data(member.id, member.name)
+        await User.User.update_progress(
+            0,
+            User.User.users[member.id],
+            Task.Task.TaskType.Voice_channel,
+            1,
+            send=False
+        )
+        # No text channel to send the task announcement to
 
     @client.command()
     async def tasks(ctx, index="none"):
@@ -57,30 +84,33 @@ def init(client):
     async def profile(ctx):
         _user = User.User.users[ctx.message.author.id]
         final = discord.Embed(title=_user.username, description=_user.profile(), color=Formatting.colour())
-        await ctx.send(embed=final)
+        await Dependencies.dispose_message(await ctx.send(embed=final))
 
     @client.command()
     async def task_select(ctx, args="none"):
         Task.Task.update_task_log()
         if args != "none":
-            try:
-                _index = int(args)
-                _task = Task.Task.task_log[_index - 1]
-                _user = User.User.users[ctx.message.author.id]
-
-                _user.tasks.append(_task)
-                Task.Task.task_log.remove(_task)
-                final = discord.Embed(title="**Task Added Successfully!**",
-                                      description=f"_Task :_ **{_task.title}** `({_task.coin_reward}c {_task.exp_reward}xp)`",
-                                      color=Formatting.colour()
-                                      )
-                await ctx.send(embed=final)
+            if await Task.Task.select_task(ctx, args):
                 return
-            except:
-                pass
 
         # • ```{c}c ```{xp}xp {title}
         final = discord.Embed(title="Task Selection List", description='\n'.join([
-            f"`{x[0] + 1}.` `{str(x[1].coin_reward).rjust(3,' ')}c {str(x[1].exp_reward).rjust(4, ' ')}xp` {x[1].title}"
+            f"`{x[0] + 1}.` `{str(x[1].coin_reward).rjust(3, ' ')}c {str(x[1].exp_reward).rjust(4, ' ')}xp` {x[1].title}"
             for x in enumerate(Task.Task.task_log)]), color=Formatting.colour())
         await ctx.send(embed=final)
+
+    @client.command()
+    async def inventory(ctx):
+        final = discord.Embed(
+            title=f"{ctx.message.author}'s Inventory",
+            description=User.User.users[ctx.message.author.id].inventory.wording(),
+            color=Formatting.colour()
+        )
+        await Dependencies.dispose_message(await ctx.send(embed=final))
+
+    @client.command()
+    async def reroll_tasks(ctx):
+        await ctx.message.delete()
+        Task.Task.task_log = []
+        Task.Task.update_task_log()
+        await task_select(ctx)

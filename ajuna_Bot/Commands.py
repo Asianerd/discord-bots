@@ -8,15 +8,6 @@ import psutil
 import random
 
 
-async def delayed_delete(message, delay=3):
-    await message.delete(delay=delay)
-
-
-async def dispose_message(ctx):
-    Dependencies.disposable_messages.append(ctx)
-    await ctx.add_reaction(Dependencies.reactions[0])
-
-
 def verify_user(ctx):
     if ctx.message.author.id == Dependencies.author_id:
         return True
@@ -42,7 +33,7 @@ def init(client):
                 wanted_link = args[2]
             else:
                 final = "Arguments insufficient or incorrect  - Streaming status needs to be provided with a url"
-                await delayed_delete(await ctx.send(final))
+                await Dependencies.delayed_delete(await ctx.send(final))
                 return
         else:
             wanted_link = ''
@@ -63,12 +54,12 @@ def init(client):
                 final = f'Activity set to **Watching {wanted_subject}**'
         else:
             final = f'Arguments insufficient or incorrect   -{args, wanted_act, wanted_subject}'
-        await delayed_delete(await ctx.send(final))
+        await Dependencies.delayed_delete(await ctx.send(final))
 
     @client.command()
     async def ping(ctx):
         await ctx.message.delete()
-        await dispose_message(await ctx.send(embed=discord.Embed(
+        await Dependencies.dispose_message(await ctx.send(embed=discord.Embed(
             title=f"**Ping :** `{int(client.latency * 1000)}`",
             color=int((int(Formatting.get_ping_colour(int(client.latency * 1000))[0])) + (
                     int(Formatting.get_ping_colour(int(client.latency * 1000))[1]) * 256))
@@ -146,7 +137,7 @@ def init(client):
                 colour=Formatting.colour()
             )
             final.set_footer(text=f"Showing page {index_wanted + 1} out of {len(_emojis)}")
-        await dispose_message(await ctx.send(embed=final))
+        await Dependencies.dispose_message(await ctx.send(embed=final))
 
     @client.command()
     async def embed(ctx, *args):
@@ -176,7 +167,7 @@ def init(client):
         msg = await ctx.send(embed=final)
 
         if disposable:
-            await dispose_message(msg)
+            await Dependencies.dispose_message(msg)
 
     @client.command()
     async def server_info(ctx):
@@ -230,7 +221,7 @@ def init(client):
                     Formatting.dynamic_color(_mem.used / _mem.total)[1] * 256)
             )
         )
-        await dispose_message(await ctx.send(embed=final))
+        await Dependencies.dispose_message(await ctx.send(embed=final))
 
     @client.command()
     @has_permissions(manage_messages=True)
@@ -246,7 +237,7 @@ def init(client):
     async def oos(ctx, deletable="none"):
         msg = await ctx.send("‎\n" * 100)
         if deletable != "none":
-            await dispose_message(msg)
+            await Dependencies.dispose_message(msg)
 
     @client.command()
     async def github(ctx):
@@ -265,7 +256,7 @@ def init(client):
             await ctx.send("ajuna_loli shutting down!")
             await client.logout()
         else:
-            await delayed_delete(await ctx.send(
+            await Dependencies.delayed_delete(await ctx.send(
                 embed=discord.Embed(title="**You are not an authorized user.**", color=Formatting.colour())), 3)
 
     @client.command()
@@ -273,11 +264,11 @@ def init(client):
         if ctx.message.attachments:
             image_attachment = ctx.message.attachments[0]
         else:
-            await delayed_delete(
+            await Dependencies.delayed_delete(
                 await ctx.send(embed=discord.Embed(title="**Image not attached!**", color=Formatting.colour())), 3)
             return
         if not (any(image_attachment.filename.lower().endswith(x) for x in 'png/jpg/jpeg'.split("/"))):
-            await delayed_delete(
+            await Dependencies.delayed_delete(
                 await ctx.send(embed=discord.Embed(title="**File format not supported.**", color=Formatting.colour())),
                 3)
             return
