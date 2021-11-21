@@ -1,3 +1,7 @@
+from . import Task
+from . import Item
+
+
 class User:
     users = {}
 
@@ -8,6 +12,7 @@ class User:
         self.exp = 0
         self.tasks = []
         self.completed_tasks = []
+        self.inventory = Item.Inventory()
 
     def get_tasks(self):
         if len(self.tasks) <= 0:
@@ -25,7 +30,7 @@ class User:
     def add_task(self, task):
         self.tasks.append(task)
 
-    def update_user_tasks(self):
+    async def update_user_tasks(self, ctx, send):
         if len(self.tasks) <= 0:
             return
         for x in self.tasks.copy():
@@ -34,6 +39,11 @@ class User:
                 self.tasks.remove(x)
                 self.coins += x.coin_reward
                 self.exp += x.exp_reward
+                for reward in x.item_reward:
+                    self.inventory.add(reward)
+
+                if send:
+                    await Task.Task.announce_task(ctx, x)
 
     """Static section"""
     @staticmethod
@@ -47,11 +57,11 @@ class User:
             User.users[user_id] = User(user_id, current_username)
 
     @staticmethod
-    def update_progress(_user, _type, _amount):
+    async def update_progress(ctx, _user, _type, _amount, send=True):
         _collection = [x for x in _user.tasks if x.type == _type]
         for x in _collection:
             x.update_progress(_amount)
-        _user.update_user_tasks()
+        await _user.update_user_tasks(ctx, send=send)
 
     @staticmethod
     def save_data():
