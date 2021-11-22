@@ -1,0 +1,23 @@
+{
+  "TaskType.Message" : {
+    "amount" : 10,
+    "coin" : 2,
+    "exp" : 10,
+    "items" : ["Cookie", "billy_os"],
+    "title" : "Send {} messages"
+  },
+  "TaskType.Reaction" : {
+    "amount" : 3,
+    "coin" : 1,
+    "exp" : 8,
+    "items" : ["Tea", "PP_yes"],
+    "title" : "Add {} reactions"
+  },
+  "TaskType.Voice_channel" : {
+    "amount" : 1,
+    "coin" : 5,
+    "exp" : 15,
+    "items" : ["Cookie", "ajian_bat"],
+    "title" : "Join {} voice channels"
+  }
+}

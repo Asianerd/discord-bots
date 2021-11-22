@@ -1,4 +1,5 @@
 import sys
+import json
 from enum import Enum
 from . import Item
 from . import User
@@ -8,48 +9,17 @@ import Formatting
 sys.path.append("..")
 
 
+class TaskType(Enum):
+    Message = 0
+    Reaction = 1
+    Voice_channel = 2
+
+
 class Task:
-    task_selection_message = 0
     task_log = []
+    task_data = {}
 
-    class TaskType(Enum):
-        Message = 0
-        Reaction = 1
-        Voice_channel = 2
-
-    task_type_amount = {
-        TaskType.Message: 10,
-        TaskType.Reaction: 3,
-        TaskType.Voice_channel: 1
-    }
-
-    task_type_coin_amount = {
-        TaskType.Message: 2,    # (for message related tasks) one message = 1 * 2 coin
-        TaskType.Reaction: 1,
-        TaskType.Voice_channel: 5
-    }
-
-    task_type_exp_amount = {
-        TaskType.Message: 10,   # (for message related tasks) one message = 1 * 10 exp
-        TaskType.Reaction: 8,
-        TaskType.Voice_channel: 15
-    }
-
-    """
-        Cookie = 0
-        Tea = 1
-        billy_os = 2
-        PP_yes = 3
-        ajian_bat = 4
-    """
-    task_type_item_reward = {
-        TaskType.Message:[Item.Item.ItemType.Cookie, Item.Item.ItemType.billy_os],
-        TaskType.Reaction:[Item.Item.ItemType.Tea, Item.Item.ItemType.PP_yes],
-        TaskType.Voice_channel:[Item.Item.ItemType.Cookie, Item.Item.ItemType.ajian_bat],
-    }
-
-    def __init__(self, _type, title, _max, level):
-        self.title = title
+    def __init__(self, _type, _max, level):
         self.type = _type
 
         self.max = _max
@@ -57,11 +27,16 @@ class Task:
 
         self.completed = False
 
-        self.coin_reward = Task.task_type_coin_amount[_type] * self.max
-        self.exp_reward = Task.task_type_exp_amount[_type] * self.max
-        self.item_reward = [Task.task_type_item_reward[self.type]
-                            [random.randint(0, len(Task.task_type_item_reward[self.type]) - 1)]
-                            for x in range(level)]
+        _task = Task.task_data[str(self.type)]
+        self.title = str(_task["title"]).format(str(self.max))
+
+        self.coin_reward = _task["coin"] * _task["amount"]
+        self.exp_reward = _task["exp"] * _task["amount"]
+        self.item_reward = []
+        for x in range(level):
+            _item = _task["items"][random.randint(0, len(_task["items"]) - 1)]
+            self.item_reward.append([x for x in Item.ItemType if x.name == _item][0])
+
 
     def update_progress(self, amount):
         self.progress += amount
@@ -80,6 +55,10 @@ class Task:
 
     """Static methods"""
     @staticmethod
+    def initialize():
+        Task.task_data = json.load(open("Economy/task_data.json"))
+
+    @staticmethod
     def update_task_log():
         if len(Task.task_log) > 5:
             Task.task_log = Task.task_log[0:4]
@@ -91,11 +70,10 @@ class Task:
 
     @staticmethod
     def generate_task(level):
-        _type = Task.TaskType(random.randint(0, len(Task.TaskType)-1))
-        _amount = Task.task_type_amount[_type] * (2 ** level)
-        return Task(_type, f"{({Task.TaskType.Message:'Send', Task.TaskType.Reaction:'Add', Task.TaskType.Voice_channel:'Join'}[_type])} "
-                           f"{_amount} "
-                           f"{({Task.TaskType.Message:'messages', Task.TaskType.Reaction:'reactions', Task.TaskType.Voice_channel:'voice channels'}[_type])}", _amount, level)
+        _type = TaskType(random.randint(0, len(TaskType)-1))
+        # _amount = Task.task_type_amount[_type] * (2 ** level)
+        _amount = Task.task_data[str(_type)]["amount"] * (2 ** level)
+        return Task(_type, _amount, level)
 
     @staticmethod
     async def announce_task(ctx, task):

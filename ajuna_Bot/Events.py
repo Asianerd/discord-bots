@@ -1,6 +1,7 @@
 import Dependencies
 import alexa_reply
 import asyncio
+from Economy import Economy
 
 
 def contains_emote(message):
@@ -48,11 +49,18 @@ def init(client):
             target = message.content[6::]
             reply = alexa_reply.reply(target, "ajuna_loli", "<@517998886141558786>")
             await message.reply(reply)
+
+        await Economy.on_message(client, message)
         await client.process_commands(message)
 
     @client.event
     async def on_reaction_add(reaction, user):
+        await Economy.on_reaction_add(client, reaction, user)
         if user.bot:
             return
         if reaction.message in Dependencies.disposable_messages:
             await reaction.message.delete()
+
+    @client.event
+    async def on_voice_state_update(member, before, after):
+        await Economy.on_voice_state_update(client, member, before, after)

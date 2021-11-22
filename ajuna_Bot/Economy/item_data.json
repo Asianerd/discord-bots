@@ -1,0 +1,22 @@
+{
+  "ItemType.Cookie": {
+    "name": "Cookie",
+    "description": "A delicious cookie, fresh out of the oven."
+  },
+  "ItemType.Tea": {
+    "name": "Tea",
+    "description": "Freshly brewed by none other than ajian_nedo."
+  },
+  "ItemType.billy_os": {
+    "name": "billy_os",
+    "description": "A copy of billy's billy_os."
+  },
+  "ItemType.PP_yes": {
+    "name": "PP's yes",
+    "description": "yes."
+  },
+  "ItemType.ajian_bat": {
+    "name": "ajian's bat",
+    "description": "ajian's bat used to bonk people."
+  }
+}

@@ -11,51 +11,57 @@ sys.path.append("..")
 sooo @🅰jian_nedo | Godly @n🅾 i have an idea about bringing a coin system here
 a shop, rewards, achievements, tasks etc
 rewards, reputation
+
+- Shop          (wip)
+- Rewards
+- Achievements
+- Tasks         (done)
+- Reputation
 """
 
 
+async def on_message(client, message):
+    if message.author.bot:
+        return
+
+    User.User.update_user_data(message.author.id, message.author.name)
+
+    await User.User.update_progress(
+        message.channel,
+        User.User.users[message.author.id],
+        Task.TaskType.Message,
+        1
+    )
+
+    # await client.process_commands(message)
+
+
+async def on_reaction_add(client, reaction, _user):
+    if _user.bot:
+        return
+    await User.User.update_progress(
+        reaction.message.channel,
+        User.User.users[_user.id],
+        Task.TaskType.Reaction,
+        1
+    )
+
+
+async def on_voice_state_update(client, member, before, after):
+    if not after.channel:
+        return
+    User.User.update_user_data(member.id, member.name)
+    await User.User.update_progress(
+        0,
+        User.User.users[member.id],
+        Task.TaskType.Voice_channel,
+        1,
+        send=False
+    )
+    # No text channel to send the task announcement to
+
+
 def init(client):
-    @client.event
-    async def on_message(message):
-        if message.author.bot:
-            return
-
-        User.User.update_user_data(message.author.id, message.author.name)
-
-        await User.User.update_progress(
-            message.channel,
-            User.User.users[message.author.id],
-            Task.Task.TaskType.Message,
-            1
-        )
-
-        await client.process_commands(message)
-
-    @client.event
-    async def on_reaction_add(reaction, _user):
-        if _user.bot:
-            return
-        await User.User.update_progress(
-            reaction.message.channel,
-            User.User.users[_user.id],
-            Task.Task.TaskType.Reaction,
-            1
-        )
-
-    @client.event
-    async def on_voice_state_update(member, before, after):
-        if not after.channel:
-            return
-        User.User.update_user_data(member.id, member.name)
-        await User.User.update_progress(
-            0,
-            User.User.users[member.id],
-            Task.Task.TaskType.Voice_channel,
-            1,
-            send=False
-        )
-        # No text channel to send the task announcement to
-
     @client.command()
     async def tasks(ctx, index="none"):
         _fetched_user = User.User.users[ctx.message.author.id]
