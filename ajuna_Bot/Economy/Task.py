@@ -30,8 +30,8 @@ class Task:
         _task = Task.task_data[str(self.type)]
         self.title = str(_task["title"]).format(str(self.max))
 
-        self.coin_reward = _task["coin"] * _task["amount"]
-        self.exp_reward = _task["exp"] * _task["amount"]
+        self.coin_reward = _task["coin"] * self.max
+        self.exp_reward = _task["exp"] * self.max
         self.item_reward = []
         for x in range(level):
             _item = _task["items"][random.randint(0, len(_task["items"]) - 1)]
