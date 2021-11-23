@@ -6,6 +6,7 @@ from . import User
 import random
 import discord
 import Formatting
+
 sys.path.append("..")
 
 
@@ -36,7 +37,6 @@ class Task:
         for x in range(level):
             _item = _task["items"][random.randint(0, len(_task["items"]) - 1)]
             self.item_reward.append([x for x in Item.ItemType if x.name == _item][0])
-
 
     def update_progress(self, amount):
         self.progress += amount
@@ -70,7 +70,7 @@ class Task:
 
     @staticmethod
     def generate_task(level):
-        _type = TaskType(random.randint(0, len(TaskType)-1))
+        _type = TaskType(random.randint(0, len(TaskType) - 1))
         # _amount = Task.task_type_amount[_type] * (2 ** level)
         _amount = Task.task_data[str(_type)]["amount"] * (2 ** level)
         return Task(_type, _amount, level)

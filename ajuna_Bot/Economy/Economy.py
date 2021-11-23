@@ -46,7 +46,7 @@ async def on_message(client, message):
 
     if message.content:
         if Dependencies.is_valid_english(message.content.split()[0]):
-            User.User.users[message.author.id].exp += 1
+            await User.User.users[message.author.id].exp.add_exp(message.channel, 1)
 
     # await client.process_commands(message)
 
@@ -131,13 +131,6 @@ def init(client):
             color=Formatting.colour()
         )
         await Dependencies.dispose_message(await ctx.send(embed=final))
-
-    @client.command()
-    async def reroll_tasks(ctx):
-        await ctx.message.delete()
-        Task.Task.task_log = []
-        Task.Task.update_task_log()
-        await task_select(ctx)
     
     @client.command()
     async def shop(ctx, args="1"):
@@ -218,7 +211,7 @@ def init(client):
         users.sort(key=(lambda x: x.exp.total), reverse=True)
         final.add_field(name="**Exp ranks**",
                         value=
-                        f"```txt\n{newline.join([f'{str(x.exp).rjust(5, apos)} {x.username}' for x in users[0:10]])}\n```"
+                        f"```txt\n{newline.join([f'{str(x.exp.total).rjust(5, apos)} {x.username}' for x in users[0:10]])}\n```"
                         )
 
         users.sort(key=(lambda x: x.coins), reverse=True)
@@ -228,14 +221,4 @@ def init(client):
                         )
         await ctx.send(embed=final)
 
-    @client.command()
-    async def add_coins(ctx, *args):
-        _user = ctx.message.mentions[0]
-        User.User.update_user_data(int(_user.id), _user.name)
-        User.User.users[_user.id].coins += int(args[1])
 
-    @client.command()
-    async def add_exp(ctx, *args):
-        _user = ctx.message.mentions[0]
-        User.User.update_user_data(int(_user.id), _user.name)
-        User.User.users[_user.id].exp += int(args[1])

@@ -1,7 +1,11 @@
+import sys
 from . import Task
 from . import Item
 from . import Experience
+import Dependencies
 import pickle
+
+sys.path.append("..")
 
 
 class User:
@@ -24,9 +28,9 @@ class User:
 
     def profile(self):
         return f"""
+        **Level {self.exp.level}**  `{self.exp.current}/{self.exp.next_level_requirement}`
         **Coins : {self.coins}**
-        **Exp   : {self.exp}**
-        **Tasks : {len(self.tasks)}**
+        **Tasks completed : {len(self.tasks)}**
         """
 
     def add_task(self, task):
@@ -40,7 +44,7 @@ class User:
                 self.completed_tasks.append(x)
                 self.tasks.remove(x)
                 self.coins += x.coin_reward
-                self.exp += x.exp_reward
+                await self.exp.add_exp(ctx, x.exp_reward)
                 for reward in x.item_reward:
                     self.inventory.add(reward)
 
@@ -49,7 +53,7 @@ class User:
 
     """Static section"""
     @staticmethod
-    def update_user_data(user_id, current_username):  # Called everytime a message is sent (not by a bot)
+    def update_user_data(user_id, current_username):  # Called everytime a message, reaction or voice channel event happens
         if user_id in [x.user_id for x in User.users.values()]:
             # Update the user's data (name, etc)
             user = User.users[user_id]
@@ -57,6 +61,7 @@ class User:
         else:
             # Create new user and append to list
             User.users[user_id] = User(user_id, current_username)
+        User.save_all()
 
     @staticmethod
     async def update_progress(ctx, _user, _type, _amount, send=True):
@@ -66,13 +71,15 @@ class User:
         await _user.update_user_tasks(ctx, send=send)
 
     @staticmethod
-    def save_data():
+    def load_all():
+        # Loading code here
         pass
 
     @staticmethod
-    def load_data():
+    def save_all():
+        # Saving code here
         pass
 
     @staticmethod
     def startup():  # Function called on startup
-        User.load_data()
+        User.load_all()
