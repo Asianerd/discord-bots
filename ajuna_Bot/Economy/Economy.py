@@ -215,16 +215,16 @@ def init(client):
             color=Formatting.colour()
         )
         users = list(User.User.users.values())
-        users.sort(key=(lambda x: x.exp), reverse=True)
+        users.sort(key=(lambda x: x.exp.total), reverse=True)
         final.add_field(name="**Exp ranks**",
                         value=
-                        f"```txt\n{newline.join([f'{str(x.exp).rjust(5, apos)} {x.username}' for x in users])}\n```"
+                        f"```txt\n{newline.join([f'{str(x.exp).rjust(5, apos)} {x.username}' for x in users[0:10]])}\n```"
                         )
 
         users.sort(key=(lambda x: x.coins), reverse=True)
         final.add_field(name="**Coin ranks**",
                         value=
-                        f"```txt\n{newline.join([f'{str(x.coins).rjust(5, apos)} {x.username}' for x in users])}\n```"
+                        f"```txt\n{newline.join([f'{str(x.coins).rjust(5, apos)} {x.username}' for x in users[0:10]])}\n```"
                         )
         await ctx.send(embed=final)
 

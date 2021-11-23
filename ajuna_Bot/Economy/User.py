@@ -1,5 +1,7 @@
 from . import Task
 from . import Item
+from . import Experience
+import pickle
 
 
 class User:
@@ -9,7 +11,7 @@ class User:
         self.user_id = user_id
         self.username = username
         self.coins = 0
-        self.exp = 0
+        self.exp = Experience.Experience()
         self.tasks = []
         self.completed_tasks = []
         self.inventory = Item.Inventory()
@@ -65,11 +67,11 @@ class User:
 
     @staticmethod
     def save_data():
-        print("Data saved!")
+        pass
 
     @staticmethod
     def load_data():
-        print("Data loaded!")
+        pass
 
     @staticmethod
     def startup():  # Function called on startup
