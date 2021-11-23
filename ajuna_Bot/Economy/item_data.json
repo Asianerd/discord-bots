@@ -1,22 +1,32 @@
 {
   "ItemType.Cookie": {
     "name": "Cookie",
-    "description": "A delicious cookie, fresh out of the oven."
+    "description": "A delicious cookie, fresh out of the oven.",
+    "value": 5,
+    "emoji": ":cookie:"
   },
   "ItemType.Tea": {
     "name": "Tea",
-    "description": "Freshly brewed by none other than ajian_nedo."
+    "description": "Freshly brewed by none other than ajian_nedo.",
+    "value": 6,
+    "emoji": ":tea:"
   },
   "ItemType.billy_os": {
     "name": "billy_os",
-    "description": "A copy of billy's billy_os."
+    "description": "A copy of billy's billy_os.",
+    "value": 10,
+    "emoji": ":floppy_disk:"
   },
   "ItemType.PP_yes": {
     "name": "PP's yes",
-    "description": "yes."
+    "description": "yes.",
+    "value": 10,
+    "emoji": ":white_check_mark:"
   },
   "ItemType.ajian_bat": {
     "name": "ajian's bat",
-    "description": "ajian's bat used to bonk people."
+    "description": "ajian's bat used to bonk people.",
+    "value": 10,
+    "emoji": ":magic_wand:"
   }
 }
