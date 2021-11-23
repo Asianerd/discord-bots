@@ -4,6 +4,7 @@ from . import Item
 from . import Experience
 import Dependencies
 import pickle
+import json
 
 sys.path.append("..")
 
@@ -72,13 +73,17 @@ class User:
 
     @staticmethod
     def load_all():
-        # Loading code here
-        pass
+        try:
+            with open("users.json") as f:
+                User.users = json.load(f)
+        except FileNotFoundError:
+            print("No users file found, creating new one")
+            User.save_all()
 
     @staticmethod
     def save_all():
-        # Saving code here
-        pass
+        with open("users.json", "w") as f:
+            json.dump(User.users, f, indent=4)
 
     @staticmethod
     def startup():  # Function called on startup
