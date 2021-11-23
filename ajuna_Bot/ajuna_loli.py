@@ -25,5 +25,6 @@ Commands.init(client)
 Economy.init(client)
 Task.Task.initialize()
 Item.Item.initialize()
+Dependencies.initialize()
 
 client.run(bot_token)

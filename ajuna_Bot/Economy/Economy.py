@@ -44,6 +44,10 @@ async def on_message(client, message):
         1
     )
 
+    if message.content:
+        if Dependencies.is_valid_english(message.content.split()[0]):
+            User.User.users[message.author.id].exp += 1
+
     # await client.process_commands(message)
 
 
@@ -201,3 +205,37 @@ def init(client):
                 title="Item doesn't exist. Please check the shop for the item names.",
                 color=Formatting.colour()
             ))).delete(delay=3)
+
+    @client.command()
+    async def global_ranking(ctx):
+        newline = "\n"
+        apos = "'"
+        final = discord.Embed(
+            title="Rankings",
+            color=Formatting.colour()
+        )
+        users = list(User.User.users.values())
+        users.sort(key=(lambda x: x.exp), reverse=True)
+        final.add_field(name="**Exp ranks**",
+                        value=
+                        f"```txt\n{newline.join([f'{str(x.exp).rjust(5, apos)} {x.username}' for x in users])}\n```"
+                        )
+
+        users.sort(key=(lambda x: x.coins), reverse=True)
+        final.add_field(name="**Coin ranks**",
+                        value=
+                        f"```txt\n{newline.join([f'{str(x.coins).rjust(5, apos)} {x.username}' for x in users])}\n```"
+                        )
+        await ctx.send(embed=final)
+
+    @client.command()
+    async def add_coins(ctx, *args):
+        _user = ctx.message.mentions[0]
+        User.User.update_user_data(int(_user.id), _user.name)
+        User.User.users[_user.id].coins += int(args[1])
+
+    @client.command()
+    async def add_exp(ctx, *args):
+        _user = ctx.message.mentions[0]
+        User.User.update_user_data(int(_user.id), _user.name)
+        User.User.users[_user.id].exp += int(args[1])

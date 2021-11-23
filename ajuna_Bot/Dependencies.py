@@ -10,6 +10,7 @@ unsendable_content = ['pinceapple', f'{command_prefix}toggle']
 authorized_users = [517998886141558786, 859005581414236160]
 emojis = []
 disposable_messages = []
+english_words = {}
 
 
 class ReactionType(Enum):
@@ -33,3 +34,13 @@ async def delayed_delete(message, delay=3):
 async def dispose_message(ctx):
     disposable_messages.append(ctx)
     await ctx.add_reaction(reactions[ReactionType.wastebasket])
+
+
+def initialize():
+    global english_words
+    with open("english_words.txt") as word_file:  # Proudly plucked from SO
+        english_words = set(word.strip().lower() for word in word_file)
+
+
+def is_valid_english(word):
+    return word in english_words
