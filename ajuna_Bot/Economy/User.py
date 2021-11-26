@@ -9,6 +9,12 @@ import json
 sys.path.append("..")
 
 
+def append_data(user_id, new):
+    data = json.load(open("users.json", "r"))
+    data[str(user_id)] = new[str(user_id)]
+    json.dump(data, open("users.json", "w"))
+
+
 class User:
     users = {}
 
@@ -45,12 +51,48 @@ class User:
                 self.completed_tasks.append(x)
                 self.tasks.remove(x)
                 self.coins += x.coin_reward
-                await self.exp.add_exp(ctx, x.exp_reward)
+                await self.exp.add_exp(ctx, x.exp_reward, send=send)
                 for reward in x.item_reward:
                     self.inventory.add(reward)
 
                 if send:
                     await Task.Task.announce_task(ctx, x)
+
+    def to_json(self):
+        return {
+            str(self.user_id): {
+                'user_id': self.user_id,
+                'username': self.username,
+                'coins': self.coins,
+                'exp': self.exp.to_json(),
+                'tasks': [x.to_json() for x in self.tasks],
+                'completed_tasks': [x.to_json() for x in self.completed_tasks],
+                'inventory': self.inventory.to_json()
+            }
+        }
+
+    def from_json(self, data):
+        self.user_id = data['user_id']
+        self.username = data['username']
+        self.coins = data['coins']
+
+        self.exp = Experience.Experience()
+        self.exp.from_json(data['exp'])
+
+        # self.tasks = [Task.Task(Task.TaskType.Message, 0, 0) for x in data['tasks']]
+        self.tasks = []
+        for x in data['tasks']:
+            self.tasks.append(Task.Task(Task.TaskType.Message, 0, 0))
+            self.tasks[-1].from_json(x)
+
+        self.completed_tasks = []
+        for x in data['completed_tasks']:
+            self.completed_tasks.append(Task.Task(Task.TaskType.Message, 0, 0))
+            self.completed_tasks[-1].from_json(x)
+
+        self.inventory = Item.Inventory()
+        self.inventory.from_json(data['inventory'])
+
 
     """Static section"""
     @staticmethod
@@ -69,21 +111,20 @@ class User:
         _collection = [x for x in _user.tasks if x.type == _type]
         for x in _collection:
             x.update_progress(_amount)
-        await _user.update_user_tasks(ctx, send=send)
+        await _user.update_user_tasks(ctx=ctx, send=send)
 
     @staticmethod
     def load_all():
-        try:
-            with open("users.json") as f:
-                User.users = json.load(f)
-        except FileNotFoundError:
-            print("No users file found, creating new one")
-            User.save_all()
+        data = json.load(open("users.json", "r"))
+        for x in data.keys():
+            _user = data[x]
+            User.update_user_data(int(_user['user_id']), _user['username'])
+            User.users[int(x)].from_json(_user)
 
     @staticmethod
     def save_all():
-        with open("users.json", "w") as f:
-            json.dump(User.users, f, indent=4)
+        for x in User.users.values():
+            append_data(x.user_id, x.to_json())
 
     @staticmethod
     def startup():  # Function called on startup

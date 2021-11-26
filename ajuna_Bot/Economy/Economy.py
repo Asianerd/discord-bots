@@ -1,5 +1,6 @@
 import sys
 import math
+import json
 from . import User
 from . import Task
 from . import Item
@@ -29,6 +30,10 @@ def select_next_few(iterable, amount, start):
         if x[0] in selection_range:
             final.append(x[1])
     return final
+
+
+def on_ready():
+    User.User.load_all()
 
 
 async def on_message(client, message):
@@ -70,10 +75,10 @@ async def on_voice_state_update(client, member, before, after):
         return
     User.User.update_user_data(member.id, member.name)
     await User.User.update_progress(
-        0,
-        User.User.users[member.id],
-        Task.TaskType.Voice_channel,
-        1,
+        ctx=0,
+        _user=User.User.users[member.id],
+        _type=Task.TaskType.Voice_channel,
+        _amount=1,
         send=False
     )
     # No text channel to send the task announcement to
@@ -221,4 +226,11 @@ def init(client):
                         )
         await ctx.send(embed=final)
 
+    @client.command()
+    async def get_json(ctx):
+        await ctx.send(User.User.users[ctx.message.author.id].to_json())
 
+    @client.command()
+    async def save_all(ctx):
+        # append_data(ctx.message.author.id, User.User.users[ctx.message.author.id].to_json())
+        pass

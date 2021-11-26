@@ -17,7 +17,7 @@ class Experience:
     def calculate_next_requirement(self):
         self.next_level_requirement = (2 ** self.level) * 10
 
-    async def add_exp(self, ctx, amount):
+    async def add_exp(self, ctx, amount, send=True):
         self.current += amount
         self.total += amount
         if self.current >= self.next_level_requirement:
@@ -25,7 +25,22 @@ class Experience:
 
             self.level += 1
             self.calculate_next_requirement()
-            await (await ctx.send(embed=discord.Embed(
-                title=f"Level up!  {self.level - 1} -> {self.level}",
-                color=Formatting.colour()
-            ))).delete(delay=3)
+
+            if send:
+                await (await ctx.send(embed=discord.Embed(
+                    title=f"Level up!  {self.level - 1} -> {self.level}",
+                    color=Formatting.colour()
+                ))).delete(delay=3)
+
+    def to_json(self):
+        return {
+            'level': self.level,
+            'current': self.current,
+            'total': self.total
+        }
+
+    def from_json(self, data):
+        self.level = data['level']
+        self.current = data['current']
+        self.total = data['total']
+        self.calculate_next_requirement()

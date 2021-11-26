@@ -42,3 +42,14 @@ class Inventory:
         if len([x for x in ItemType if self.collection[x] > 0]) <= 0:
             return "No items in your inventory!"
         return "\n".join([f"• `{self.collection[x]}` **{x.name}**" for x in ItemType if self.collection[x] > 0])
+
+    def to_json(self):
+        final = {}
+        for x in ItemType:
+            final[str(x)] = self.collection[x]
+        return final
+
+    def from_json(self, data):
+        for x in ItemType:
+            self.collection[x] = data[str(x)]
+

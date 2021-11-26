@@ -15,11 +15,6 @@ english_words = {}
 
 class ReactionType(Enum):
     wastebasket = 0
-    no1 = 1
-    no2 = 2
-    no3 = 3
-    no4 = 4
-    no5 = 5
 
 
 reactions = {

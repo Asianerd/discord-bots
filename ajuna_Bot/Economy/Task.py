@@ -53,6 +53,33 @@ class Task:
     def progress_percentage(self):
         return self.progress / self.max
 
+    def to_json(self):
+        return {
+            'type': str(self.type),
+            'max': self.max,
+            'progress': self.progress,
+
+            'completed': self.completed,
+
+            'title': self.title,
+            'coin_reward': self.coin_reward,
+            'exp_reward': self.exp_reward,
+            'item_reward': [str(x) for x in self.item_reward]
+        }
+
+    def from_json(self, data):
+        self.type = [x for x in Item.ItemType if str(x) == data['type']]
+        self.max = data['max']
+
+        self.progress = data['progress']
+
+        self.completed = data['completed']
+
+        self.title = data['title']
+        self.coin_reward = data['coin_reward']
+        self.exp_reward = data['exp_reward']
+        self.item_reward = [[i for i in Item.ItemType if str(x) == f"ItemType.{i.name}"][0] for x in data['item_reward']]
+
     """Static methods"""
     @staticmethod
     def initialize():
