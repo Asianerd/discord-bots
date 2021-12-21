@@ -291,6 +291,19 @@ def init(client):
                 final.append(wanted)
         await ctx.send('`' + " ".join(final) + '`')
 
+    @client.command()
+    async def aussie(ctx, *args):
+        message = ' '.join(args)
+        message = message[-1::-1]
+        final = ''.join([Dependencies.upside_down_letters[x] if x in Dependencies.upside_down_letters else x for x in message])
+        await ctx.send(embed=discord.Embed(
+            color=Formatting.colour(),
+            title=final,
+            description=""
+        ))
+
+
+
     # @client.command()
     # async def social_credit(ctx, args):
     #     wanted_credits = 0
