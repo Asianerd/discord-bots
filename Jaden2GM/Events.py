@@ -28,7 +28,7 @@ def init(client):
             await ctx.send('Understood, shutting down.')
             await client.logout()
         else:
-            await (await ctx.send(discord.Embed(
+            await (await ctx.send(embed=discord.Embed(
                 title="You're not my master!",
                 description="_This command can only be used by my creator._",
 
