@@ -1,14 +1,25 @@
+import math
 import alexa_reply
 import discord
 from discord.ext import commands
 
 import Dependencies
 import Formatting
+import Quest
+
+
+def find_in_message(key, message):
+    for x in message:
+        if x[0:len(key)] == key:
+            return x[len(key) + 1:]
+    return False
 
 
 def init(client):
     @client.event
     async def on_ready():
+        await client.change_presence(
+            activity=discord.Activity(type=discord.ActivityType.watching, name="over T(G)evyat"))
         print('Jaden2GM is ready')
 
     @client.event
@@ -18,7 +29,7 @@ def init(client):
 
         if 'jaden' in str(message.content).lower():
             if str(message.content)[0:5].lower() == 'jaden':
-                await message.channel.send(alexa_reply.reply(message.content[6:], 'Sheep', '<@517998886141558786>'))
+                await message.reply(alexa_reply.reply(message.content[6:], 'Sheep', '<@517998886141558786>'))
 
         await client.process_commands(message)
 
@@ -31,7 +42,6 @@ def init(client):
             await (await ctx.send(embed=discord.Embed(
                 title="You're not my master!",
                 description="_This command can only be used by my creator._",
-
                 colour=Dependencies.default_embed_colour
             ))).delete(delay=3)
 
@@ -79,14 +89,150 @@ def init(client):
 
     @client.command(hidden=True)
     async def change_stat(ctx, args):
-        if args in ['do', 'on', 'id', 'in']:
-            if args == 'do':
-                await client.change_presence(status=discord.Status.do_not_disturb)
-            if args == 'on':
-                await client.change_presence(status=discord.Status.online)
-            if args == 'id':
-                await client.change_presence(status=discord.Status.idle)
-            if args == 'in':
-                await client.change_presence(status=discord.Status.invisible)
+        arg_dict = {
+            'do': discord.Status.do_not_disturb,
+            'on': discord.Status.online,
+            'id': discord.Status.idle,
+            'in': discord.Status.invisible
+        }
+
+        if args in arg_dict.keys():
+            await client.change_presence(status=arg_dict['args'])
         else:
-            await ctx.send('arg not in activity list')
+            await ctx.send('Argument not in activity list')
+
+    @client.command()
+    async def quests(ctx, args='1'):
+        try:
+            page = int(args) - 1
+            if (page < int(math.ceil(len(Quest.Quest.quests) / Dependencies.quests_per_page))) and (page >= 0):
+                pass
+            else:
+                raise ValueError
+        except ValueError:
+            await ctx.send(embed=discord.Embed(
+                title="Invalid page number!",
+                description=f"Use a page number from [1 - {int(math.ceil(len(Quest.Quest.quests) / Dependencies.quests_per_page))}]",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+
+        final = discord.Embed(
+            title="Quests",
+            description=('\n'.join([x.get_info() for x in Quest.Quest.fetch_split_quests(page)])),
+            colour=Formatting.colour()
+        )
+
+        temp = "{id}"
+        final.set_footer(text=f'(quest {temp}) for more info\nPage {page + 1} of {int(math.ceil(len(Quest.Quest.quests) / Dependencies.quests_per_page))}')
+        await ctx.send(embed=final)
+
+    @client.command()
+    async def quest(ctx, args='not_given'):
+        try:
+            if args == 'not_given':
+                raise ValueError
+            target_id = int(args)
+            if target_id in [x.id for x in Quest.Quest.quests]:
+                pass
+            else:
+                raise ValueError
+        except ValueError:
+            newline = "\n"
+            await ctx.send(embed=discord.Embed(
+                title="Invalid ID",
+                description=f"Pick from one of these IDS : \n{newline.join([f'- {x.id} : {x.name}' for x in Quest.Quest.quests])}",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+
+        target: Quest.Quest = [x for x in Quest.Quest.quests if x.id == target_id][0]
+        final = discord.Embed(
+            title=target.name,
+            color=Dependencies.default_embed_colour
+        )
+        final.add_field(
+            name="Info",
+            value=f"{target.description}\n"
+                  f"\n"
+                  f"**Rewards :**\n"
+                  f"- {target.rewards}\n"
+                  f"\n"
+                  f"Ongoing : **__{'Yes' if target.is_ongoing else 'No'}__**"
+        )
+        final.add_field(
+            name=f"Finishers - {len(target.users_completed)}",
+            value=''.join([f'- <@{x}>\n' for x in target.users_completed]) if (len(target.users_completed) != 0) else 'None'
+        )
+        await ctx.send(embed=final)
+
+    @commands.has_permissions(administrator=True)
+    @client.command()
+    async def add_quest(ctx, *args):
+        name = find_in_message('name', args)
+        description = find_in_message('description', args)
+        rewards = find_in_message('rewards', args)
+        if (not name) or (not rewards):
+            await ctx.send(embed=discord.Embed(
+                title='Quest name or rewards is not given!',
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+
+        x = Quest.Quest(
+            name,
+            description if description else '',
+            rewards,
+            0,
+            0
+        )
+        await ctx.send(embed=discord.Embed(
+            title="Quest added!",
+            colour=Dependencies.success_embed_colour
+        ))
+        await quests(ctx, args=str(int(math.ceil(len(Quest.Quest.quests) / Dependencies.quests_per_page))))
+        Quest.Quest.save()
+
+    @commands.has_permissions(administrator=True)
+    @client.command(hidden=True)
+    async def complete_quest(ctx, *args):
+        user = [x for x in args if x[0] == '<'][0]
+        quest_id = int([x for x in args if x[0] != '<'][0])
+
+        result = Quest.Quest.complete_quest(int(''.join([i for i in user if i in '1 2 3 4 5 6 7 8 9 0'.split()])), quest_id)
+        if result[0]:
+            target: Quest.Quest = [x for x in Quest.Quest.quests if x.id == quest_id][0]
+
+        await ctx.send(embed=discord.Embed(
+            title=result[1],
+            description=f"Quest name : {target.name}" if result[0] else '',
+            colour=Dependencies.success_embed_colour if result[0] else Dependencies.error_embed_colour
+        ))
+        Quest.Quest.save()
+
+    @commands.has_permissions(administrator=True)
+    @client.command()
+    async def delete_quest(ctx, args='not_given'):
+        try:
+            quest_id = int(args)
+            if quest_id in [x.id for x in Quest.Quest.quests]:
+                pass
+            else:
+                raise ValueError
+        except ValueError:
+            await ctx.send(embed=discord.Embed(
+                title="Invalid ID",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+
+        target_quest = [x for x in Quest.Quest.quests if x.id == quest_id][0]
+        name = target_quest.name
+        Quest.Quest.quests.remove(target_quest)
+        await ctx.send(embed=discord.Embed(
+            title="Quest removed sucessfully",
+            description=f"Name : {name}",
+            colour=Dependencies.success_embed_colour
+        ))
+        Quest.Quest.save()
+

@@ -1,0 +1,12 @@
+{
+    "1": {
+        "name": "test",
+        "description": "description",
+        "id": 1,
+        "rewards": "some reward",
+        "users_completed": [],
+        "time_start": 0,
+        "time_end": 0,
+        "is_ongoing": true
+    }
+}

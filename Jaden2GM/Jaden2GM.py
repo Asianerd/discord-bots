@@ -3,6 +3,7 @@ from discord.ext import commands
 
 import Dependencies
 import Events
+import Quest
 
 # So basically, the bot is about quest system & basic conversation
 """
@@ -17,6 +18,7 @@ Basic conversation // Done
 """
 
 Dependencies.init()
+Quest.Quest.initialize()
 
 client = commands.Bot(command_prefix=Dependencies.command_prefix)
 
