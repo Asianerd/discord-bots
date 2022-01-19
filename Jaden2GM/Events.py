@@ -6,6 +6,7 @@ from discord.ext import commands
 import Dependencies
 import Formatting
 import Quest
+import User
 
 
 def find_in_message(key, message):
@@ -27,9 +28,31 @@ def init(client):
         if message.author.bot:
             return
 
-        if 'jaden' in str(message.content).lower():
-            if str(message.content)[0:5].lower() == 'jaden':
-                await message.reply(alexa_reply.reply(message.content[6:], 'Sheep', '<@517998886141558786>'))
+        if message.author.id not in [x.user_id for x in User.User.users]:
+            x = User.User(message.author.name, message.author.id)
+            print("new user")
+        user: User.User = [x for x in User.User.users if x.user_id == message.author.id][0]
+        user.update_name(message.author.name)
+
+        if str(message.content).lower() == 'jaden points':
+            result = user.daily_points()
+            if result:
+                await message.channel.send(embed=discord.Embed(
+                    title=f"Thanks for claiming today's daily points, {message.author.name}",
+                    description=f"_5 Quest Points have been added to the Leaderboard!_\n"
+                                f"_{user.points - 5} -> {user.points}_",
+                    colour=Dependencies.default_embed_colour
+                ))
+            else:
+                await message.channel.send(embed=discord.Embed(
+                    title="You have already claimed today's daily points!",
+                    description=f"Try again at <t:{user.last_daily_points + 86400}>",
+                    colour=Dependencies.error_embed_colour
+                ))
+        else:
+            if 'jaden' in str(message.content).lower():
+                if str(message.content)[0:5].lower() == 'jaden':
+                    await message.reply(alexa_reply.reply(message.content[6:], 'Sheep', '<@517998886141558786>'))
 
         await client.process_commands(message)
 
@@ -124,7 +147,8 @@ def init(client):
         )
 
         temp = "{id}"
-        final.set_footer(text=f'(quest {temp}) for more info\nPage {page + 1} of {int(math.ceil(len(Quest.Quest.quests) / Dependencies.quests_per_page))}')
+        final.set_footer(
+            text=f'(quest {temp}) for more info\nPage {page + 1} of {int(math.ceil(len(Quest.Quest.quests) / Dependencies.quests_per_page))}')
         await ctx.send(embed=final)
 
     @client.command()
@@ -157,12 +181,14 @@ def init(client):
                   f"\n"
                   f"**Rewards :**\n"
                   f"- {target.rewards}\n"
+                  f"- {target.points} Jaden points"
                   f"\n"
                   f"Ongoing : **__{'Yes' if target.is_ongoing else 'No'}__**"
         )
         final.add_field(
             name=f"Finishers - {len(target.users_completed)}",
-            value=''.join([f'- <@{x}>\n' for x in target.users_completed]) if (len(target.users_completed) != 0) else 'None'
+            value=''.join([f'- <@{x}>\n' for x in target.users_completed]) if (
+                    len(target.users_completed) != 0) else 'None'
         )
         await ctx.send(embed=final)
 
@@ -172,9 +198,19 @@ def init(client):
         name = find_in_message('name', args)
         description = find_in_message('description', args)
         rewards = find_in_message('rewards', args)
-        if (not name) or (not rewards):
+        _points = find_in_message('points', args)
+        try:
+            points = int(_points)
+        except ValueError:
             await ctx.send(embed=discord.Embed(
-                title='Quest name or rewards is not given!',
+                title="Invalid points value",
+                description="Please only input numbers",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+        if (not name) or (not rewards) or (not points):
+            await ctx.send(embed=discord.Embed(
+                title='Quest name/rewards/points is not given!',
                 colour=Dependencies.error_embed_colour
             ))
             return
@@ -183,8 +219,7 @@ def init(client):
             name,
             description if description else '',
             rewards,
-            0,
-            0
+            points
         )
         await ctx.send(embed=discord.Embed(
             title="Quest added!",
@@ -199,7 +234,8 @@ def init(client):
         user = [x for x in args if x[0] == '<'][0]
         quest_id = int([x for x in args if x[0] != '<'][0])
 
-        result = Quest.Quest.complete_quest(int(''.join([i for i in user if i in '1 2 3 4 5 6 7 8 9 0'.split()])), quest_id)
+        result = Quest.Quest.complete_quest(int(''.join([i for i in user if i in '1 2 3 4 5 6 7 8 9 0'.split()])),
+                                            quest_id)
         if result[0]:
             target: Quest.Quest = [x for x in Quest.Quest.quests if x.id == quest_id][0]
 
@@ -236,3 +272,41 @@ def init(client):
         ))
         Quest.Quest.save()
 
+    @client.command()
+    async def profile(ctx):
+        user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
+        final = discord.Embed(
+            title=user.username,
+            description=f"Points : {user.points}\n"
+                        f"Quests completed : {user.quests_completed()}\n"
+                        f"\n"
+                        f"Last daily points : <t:{user.last_daily_points}>\n"
+                        f"Next daily points : <t:{user.last_daily_points + 86400}>",
+            colour=Dependencies.default_embed_colour
+        )
+        final.set_thumbnail(url=ctx.message.author.avatar_url)
+        await ctx.send(embed=final)
+
+    @client.command()
+    async def leaderboard(ctx):
+        User.User.users.sort(key=lambda x: x.points, reverse=True)
+        apos = "'"
+        final = discord.Embed(
+            title="Leaderboard",
+            colour=Dependencies.default_embed_colour
+        )
+        final.add_field(
+            name="Points",
+            value='```txt\n' + '\n'.join(
+                [f'{str(x.points).rjust(5, apos)} {x.username}' for x in User.User.users[0:15]]) + "```"
+        )
+        User.User.users.sort(key=lambda x: x.quests_completed(), reverse=True)
+        final.add_field(
+            name="Quests completed",
+            value='```txt\n' + '\n'.join(
+                [f'{str(x.quests_completed()).rjust(2, apos)} {x.username}' for x in User.User.users[0:15]]) + "```"
+        )
+        final.set_footer(
+            text=f"Showing {len(User.User.users) if (len(User.User.users) < 15) else 15} out of {len(User.User.users)} users"
+        )
+        await ctx.send(embed=final)

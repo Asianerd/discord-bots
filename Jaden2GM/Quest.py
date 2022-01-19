@@ -1,4 +1,5 @@
 import json
+import User
 
 
 class Quest:
@@ -37,7 +38,7 @@ class Quest:
             for x in data_file.items():
                 data = x[1]
 
-                item = Quest('', '', '', 0, 0)
+                item = Quest('', '', '', 0)
                 item.__dict__ = data
 
     @staticmethod
@@ -46,7 +47,7 @@ class Quest:
             target_quest = [x for x in Quest.quests if x.id == quest_id][0]
             result = target_quest.add_completed_user(user_id)
             return {
-                True: [True, "User added successfully"],
+                True: [True, "User completed quest successfully"],
                 False: [False, "User has already completed this quest"]
             }[result]
         else:
@@ -62,7 +63,7 @@ class Quest:
             split_quests[-1].append(item)
         return split_quests[page]
 
-    def __init__(self, name, description, rewards, time_start, time_end):
+    def __init__(self, name, description, rewards, points):
         self.name = name
         self.description = description
         if len(Quest.quests) != 0:
@@ -71,11 +72,9 @@ class Quest:
             self.id = len(Quest.quests) + 1
 
         self.rewards = rewards
+        self.points = points
 
         self.users_completed = []
-
-        self.time_start = time_start
-        self.time_end = time_end
 
         self.is_ongoing = True
 
@@ -88,5 +87,6 @@ class Quest:
     def add_completed_user(self, user_id):
         if not (user_id in self.users_completed):
             self.users_completed.append(user_id)
+            [x for x in User.User.users if x.user_id == user_id][0].points += self.points
             return True
         return False

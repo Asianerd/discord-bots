@@ -1,12 +1,35 @@
 {
     "1": {
         "name": "test",
-        "description": "description",
+        "description": "test",
         "id": 1,
-        "rewards": "some reward",
-        "users_completed": [],
-        "time_start": 0,
-        "time_end": 0,
+        "rewards": "none",
+        "points": 100,
+        "users_completed": [
+            517998886141558786
+        ],
+        "is_ongoing": true
+    },
+    "2": {
+        "name": "test",
+        "description": "test",
+        "id": 2,
+        "rewards": "none",
+        "points": 100,
+        "users_completed": [
+            517998886141558786
+        ],
+        "is_ongoing": true
+    },
+    "3": {
+        "name": "test",
+        "description": "test",
+        "id": 3,
+        "rewards": "none",
+        "points": 100,
+        "users_completed": [
+            517998886141558786
+        ],
         "is_ongoing": true
     }
 }
