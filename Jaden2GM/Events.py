@@ -31,7 +31,6 @@ def init(client):
 
         if message.author.id not in [x.user_id for x in User.User.users]:
             x = User.User(message.author.name, message.author.id)
-            print("new user")
         user: User.User = [x for x in User.User.users if x.user_id == message.author.id][0]
         user.update_name(message.author.name)
 
@@ -283,7 +282,17 @@ def init(client):
 
     @client.command()
     async def profile(ctx):
-        user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
+        if len(ctx.message.mentions) > 0:
+            _collection = [x for x in User.User.users if x.user_id == ctx.message.mentions[0].id]
+            if len(_collection) > 0:
+                user = _collection[0]
+            else:
+                user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
+        else:
+            user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
+
+        discord_user = await client.fetch_user(user.user_id)
+
         final = discord.Embed(
             title=user.username,
             colour=Dependencies.default_embed_colour
@@ -304,7 +313,7 @@ def init(client):
             value='\n'.join(incomplete_quests) if (len(incomplete_quests) > 0) else 'Nothing to show here'
         )
 
-        final.set_thumbnail(url=ctx.message.author.avatar_url)
+        final.set_thumbnail(url=discord_user.avatar_url)
         await ctx.send(embed=final)
 
     @client.command()
