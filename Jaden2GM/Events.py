@@ -126,6 +126,14 @@ def init(client):
 
     @client.command()
     async def quests(ctx, args='1'):
+        if len(Quest.Quest.quests) == 0:
+            await ctx.send(embed=discord.Embed(
+                title="No quests to show!",
+                description="There are no active quests right now!",
+                colour=Dependencies.default_embed_colour
+            ))
+            return
+
         try:
             page = int(args) - 1
             if (page < int(math.ceil(len(Quest.Quest.quests) / Dependencies.quests_per_page))) and (page >= 0):
@@ -181,7 +189,7 @@ def init(client):
                   f"\n"
                   f"**Rewards :**\n"
                   f"- {target.rewards}\n"
-                  f"- {target.points} Jaden points"
+                  f"- {target.points} Quest points"
                   f"\n"
                   f"Ongoing : **__{'Yes' if target.is_ongoing else 'No'}__**"
         )
@@ -277,13 +285,24 @@ def init(client):
         user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
         final = discord.Embed(
             title=user.username,
-            description=f"Points : {user.points}\n"
-                        f"Quests completed : {user.quests_completed()}\n"
-                        f"\n"
-                        f"Last daily points : <t:{user.last_daily_points}>\n"
-                        f"Next daily points : <t:{user.last_daily_points + 86400}>",
             colour=Dependencies.default_embed_colour
         )
+
+        final.add_field(
+            name="Info",
+            value=f"Points : {user.points}\n"
+                  f"Quests completed : {user.quests_completed()}\n"
+                  f"\n"
+                  f"Last daily points : <t:{user.last_daily_points}>\n"
+                  f"Next daily points : <t:{user.last_daily_points + 86400}>"
+        )
+        incomplete_quests = [f'`{str(x.id).rjust(2, "0")}`| {x.name}' for x in Quest.Quest.quests if
+                             user.user_id not in x.users_completed]
+        final.add_field(
+            name="Unfinished quests",
+            value='\n'.join(incomplete_quests) if (len(incomplete_quests) > 0) else 'Nothing to show here'
+        )
+
         final.set_thumbnail(url=ctx.message.author.avatar_url)
         await ctx.send(embed=final)
 
