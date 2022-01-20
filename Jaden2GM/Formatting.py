@@ -50,3 +50,16 @@ def uptime_string(enoch_time):
         minute = enoch_time / 60
         second = enoch_time - (int(minute) * 60)
         return f"{int(minute)}m {int(second)}s"
+
+
+def beautify_dict(d, indent=0):
+    final = ''
+    for key, value in d.items():
+        #print('\t' * indent + str(key))
+        final += '\t' * indent + str(key)
+        if isinstance(value, dict):
+            beautify_dict(value, indent+1)
+        else:
+            #print('\t' * (indent+1) + str(value))
+            final += '\t' * (indent+1) + str(value)
+    return final

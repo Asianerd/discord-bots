@@ -2,6 +2,7 @@ import math
 import alexa_reply
 import discord
 from discord.ext import commands
+import json
 
 import Dependencies
 import Formatting
@@ -329,3 +330,19 @@ def init(client):
             text=f"Showing {len(User.User.users) if (len(User.User.users) < 15) else 15} out of {len(User.User.users)} users"
         )
         await ctx.send(embed=final)
+
+    @client.command()
+    async def fetch_data(ctx):
+        for x in [
+            ("users.json", "User"),
+            ("quest.json", "Quest")
+        ]:
+            with open(x[0], 'r', encoding='utf-8') as file:
+                await ctx.send(embed=discord.Embed(
+                    title=f"{x[1]} data",
+                    description=f"```json\n"
+                                f"{json.dumps(json.load(file), sort_keys=True, indent=4)}\n"
+                                f"```",
+                    colour=Dependencies.default_embed_colour
+                ))
+
