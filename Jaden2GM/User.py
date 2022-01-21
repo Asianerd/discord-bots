@@ -32,11 +32,19 @@ class User:
                 item.__dict__ = data
         User.save()
 
+    @staticmethod
+    def fetch_user(target_id, username):
+        if target_id in [x.user_id for x in User.users]:
+            return [x for x in User.users if x.user_id == target_id][0]
+        else:
+            x = User(username, target_id)
+            return x
+
     def __init__(self, username, user_id):
         if user_id in [x.user_id for x in User.users]:
             return
 
-        self.username = username
+        self.username = str(username[0:32])
         self.user_id = user_id
 
         self.points = 0
@@ -46,7 +54,7 @@ class User:
         User.users.append(self)
 
     def update_name(self, name):
-        self.username = name
+        self.username = str(name[0:32])
         User.save()
 
     def quests_completed(self):

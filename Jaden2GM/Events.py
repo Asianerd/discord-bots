@@ -57,6 +57,42 @@ def init(client):
         await client.process_commands(message)
 
     @client.command()
+    async def help(ctx, args='default'):
+        # kinda complicated but it works
+        category = str(args).lower()
+        newline = "\n"
+        if category not in Dependencies.help_info.keys():
+            await ctx.send(embed=discord.Embed(
+                title="Sorry, invalid category selected.",
+                description=f"Please pick one of the following categories : \n{''.join([f'>help {x}{newline}' for x in Dependencies.help_info.keys()])}",
+                colour=Dependencies.default_embed_colour
+            ))
+            return
+
+        if category == "admin":
+            text = ''
+            for x in Dependencies.help_info['admin'].items():
+                text += f'__**{str(x[0]).capitalize()}**__\n\n'
+                for i in x[1].items():
+                    text += f'**{i[0]}**\n'
+                    text += f' - {i[1]}\n\n'
+        else:
+            raw_text = Dependencies.help_info[category]
+            if type(raw_text) == dict:
+                text = ''.join([f'**{x[0]}**\n - {x[1]}\n\n' for x in raw_text.items()])
+            else:
+                text = raw_text
+        await ctx.send(embed=discord.Embed(
+            title="Help",
+            description=f"""
+            **{category.capitalize()} category**
+            
+            {text}
+            """,
+            colour=Dependencies.default_embed_colour
+        ))
+
+    @client.command()
     async def shut_down(ctx):
         if ctx.author.id == Dependencies.master_id:
             await ctx.send('Understood, shutting down.')
@@ -76,7 +112,7 @@ def init(client):
                     int(Formatting.get_ping_colour(int(client.latency * 1000))[1]) * 256))
         ))
 
-    @client.command()
+    @client.command(hidden=True)
     async def change_pres(ctx, *args):
         await ctx.message.delete()
         acts = ['g', 'l', 's', 'w']
@@ -125,7 +161,7 @@ def init(client):
             await ctx.send('Argument not in activity list')
 
     @client.command()
-    async def quests(ctx, args='1'):
+    async def quest_list(ctx, args='1'):
         if len(Quest.Quest.quests) == 0:
             await ctx.send(embed=discord.Embed(
                 title="No quests to show!",
@@ -233,7 +269,7 @@ def init(client):
             title="Quest added!",
             colour=Dependencies.success_embed_colour
         ))
-        await quests(ctx, args=str(int(math.ceil(len(Quest.Quest.quests) / Dependencies.quests_per_page))))
+        await quest_list(ctx, args=str(int(math.ceil(len(Quest.Quest.quests) / Dependencies.quests_per_page))))
         Quest.Quest.save()
 
     @commands.has_permissions(administrator=True)
@@ -253,6 +289,76 @@ def init(client):
             colour=Dependencies.success_embed_colour if result[0] else Dependencies.error_embed_colour
         ))
         Quest.Quest.save()
+
+    @commands.has_permissions(administrator=True)
+    @client.command()
+    async def close_quest(ctx, args='non_given'):
+        if args != 'non_given':
+            try:
+                quest_id = int(args)
+                if quest_id not in [x.id for x in Quest.Quest.quests]:
+                    raise ValueError
+            except ValueError:
+                await ctx.send(embed=discord.Embed(
+                    title="Invalid Quest ID",
+                    colour=Dependencies.error_embed_colour
+                ))
+                return
+        else:
+            await ctx.send(embed=discord.Embed(
+                title="No Quest ID given!",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+        quest_object: Quest.Quest = [x for x in Quest.Quest.quests if x.id == quest_id][0]
+        if quest_object.is_ongoing:
+            quest_object.is_ongoing = False
+            await ctx.send(embed=discord.Embed(
+                title="Quest closed!",
+                description=f"Name : {quest_object.name}",
+                colour=Dependencies.success_embed_colour
+            ))
+        else:
+            await ctx.send(embed=discord.Embed(
+                title="Quest has already been closed.",
+                description=f"Name : {quest_object.name}",
+                colour=Dependencies.default_embed_colour
+            ))
+
+    @commands.has_permissions(administrator=True)
+    @client.command()
+    async def open_quest(ctx, args='non_given'):
+        if args != 'non_given':
+            try:
+                quest_id = int(args)
+                if quest_id not in [x.id for x in Quest.Quest.quests]:
+                    raise ValueError
+            except ValueError:
+                await ctx.send(embed=discord.Embed(
+                    title="Invalid Quest ID",
+                    colour=Dependencies.error_embed_colour
+                ))
+                return
+        else:
+            await ctx.send(embed=discord.Embed(
+                title="No Quest ID given!",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+        quest_object: Quest.Quest = [x for x in Quest.Quest.quests if x.id == quest_id][0]
+        if not quest_object.is_ongoing:
+            quest_object.is_ongoing = True
+            await ctx.send(embed=discord.Embed(
+                title="Quest opened!",
+                description=f"Name : {quest_object.name}",
+                colour=Dependencies.success_embed_colour
+            ))
+        else:
+            await ctx.send(embed=discord.Embed(
+                title="Quest is already open.",
+                description=f"Name : {quest_object.name}",
+                colour=Dependencies.default_embed_colour
+            ))
 
     @commands.has_permissions(administrator=True)
     @client.command()
@@ -283,11 +389,12 @@ def init(client):
     @client.command()
     async def profile(ctx):
         if len(ctx.message.mentions) > 0:
-            _collection = [x for x in User.User.users if x.user_id == ctx.message.mentions[0].id]
-            if len(_collection) > 0:
-                user = _collection[0]
-            else:
-                user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
+            # _collection = [x for x in User.User.users if x.user_id == ctx.message.mentions[0].id]
+            # if len(_collection) > 0:
+            #     user = _collection[0]
+            # else:
+            #     user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
+            user = User.User.fetch_user(ctx.message.mentions[0].id, ctx.message.mentions[0].name)
         else:
             user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
 
@@ -316,9 +423,44 @@ def init(client):
         final.set_thumbnail(url=discord_user.avatar_url)
         await ctx.send(embed=final)
 
+    @commands.has_permissions(administrator=True)
+    @client.command()
+    async def give_points(ctx, *args):
+        if len(ctx.message.mentions) > 0:
+            user: User.User = User.User.fetch_user(ctx.message.mentions[0].id, ctx.message.mentions[0].name)
+            try:
+                amounts = [x for x in args if x[0] in '-,1,2,3,4,5,6,7,8,9,0'.split(',')]
+                if len(amounts) > 0:
+                    amount = int(amounts[0])
+                else:
+                    await ctx.send(embed=discord.Embed(
+                        title="No amount given!",
+                        colour=Dependencies.error_embed_colour
+                    ))
+                    return
+            except ValueError:
+                await ctx.send(embed=discord.Embed(
+                    title="Invalid point amount",
+                    colour=Dependencies.error_embed_colour
+                ))
+                return
+        else:
+            await ctx.send(embed=discord.Embed(
+                title="Invalid user, please ping someone",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+        user.points += amount
+        await ctx.send(embed=discord.Embed(
+            title=f"{amount} quest points successfully given to {user.username}!",
+            description=f"{user.points - amount} -> {user.points}",
+            colour=Dependencies.success_embed_colour
+        ))
+
     @client.command()
     async def leaderboard(ctx):
         User.User.users.sort(key=lambda x: x.points, reverse=True)
+        cap = 15
         apos = "'"
         final = discord.Embed(
             title="Leaderboard",
@@ -327,16 +469,16 @@ def init(client):
         final.add_field(
             name="Points",
             value='```txt\n' + '\n'.join(
-                [f'{str(x.points).rjust(5, apos)} {x.username}' for x in User.User.users[0:15]]) + "```"
+                [f'{str(x.points).rjust(5, apos)} {x.username}' for x in User.User.users[0:cap]]) + "```"
         )
         User.User.users.sort(key=lambda x: x.quests_completed(), reverse=True)
         final.add_field(
             name="Quests completed",
             value='```txt\n' + '\n'.join(
-                [f'{str(x.quests_completed()).rjust(2, apos)} {x.username}' for x in User.User.users[0:15]]) + "```"
+                [f'{str(x.quests_completed()).rjust(2, apos)} {x.username}' for x in User.User.users[0:cap]]) + "```"
         )
         final.set_footer(
-            text=f"Showing {len(User.User.users) if (len(User.User.users) < 15) else 15} out of {len(User.User.users)} users"
+            text=f"Showing {len(User.User.users) if (len(User.User.users) < cap) else cap} out of {len(User.User.users)} users"
         )
         await ctx.send(embed=final)
 
@@ -349,9 +491,9 @@ def init(client):
             with open(x[0], 'r', encoding='utf-8') as file:
                 await ctx.send(embed=discord.Embed(
                     title=f"{x[1]} data",
-                    description=f"```json\n"
+                    description=f"```json"
+                                f"\n"
                                 f"{json.dumps(json.load(file), sort_keys=True, indent=4)}\n"
                                 f"```",
                     colour=Dependencies.default_embed_colour
                 ))
-
