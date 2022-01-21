@@ -22,7 +22,10 @@ Dependencies.init()
 User.User.initialize()
 Quest.Quest.initialize()
 
-client = commands.Bot(command_prefix=Dependencies.command_prefix)
+client = commands.Bot(
+    command_prefix=Dependencies.command_prefix,
+    help_command=None
+)
 
 Events.init(client)
 
