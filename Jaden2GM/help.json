@@ -2,7 +2,8 @@
   "default": "This is the help menu!\n\nPick one of these categories : \n>help general\n>help quests\n>help points\n>help admin",
   "general": {
     "ping": "Shows the latency of the bot(ms)",
-    "fetch_data": "Displays all stored data"
+    "fetch_data": "Displays all stored data",
+    "save_data": "Saves all data\n__**Don't spam this!**__"
   },
   "quests": {
     "quest": "Gets more information about a quest\n```txt\nUsage : >quest {id}```",
@@ -21,7 +22,7 @@
       "delete_quest": "Deletes a quest\nWARNING : You cannot undo this!\n```txt\nUsage : >delete_quest {quest id}```"
     },
     "points": {
-      "give_points": "Gives points to a user\n```txt\nUsage : >give_points {ping user} {amount of points (can be negative)}```"
+      "give_points": "Gives points to a singular/multiple user\n```txt\nUsage : >give_points {ping user(can be multiple)} {amount of points (can be negative)}```"
     }
   }
 }

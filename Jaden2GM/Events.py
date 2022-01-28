@@ -275,19 +275,67 @@ def init(client):
     @commands.has_permissions(administrator=True)
     @client.command(hidden=True)
     async def complete_quest(ctx, *args):
-        user = [x for x in args if x[0] == '<'][0]
-        quest_id = int([x for x in args if x[0] != '<'][0])
+        #user = [x for x in args if x[0] == '<'][0]
+        if len([x for x in args if x[0] != '<']) > 0:
+            try:
+                quest_id = int([x for x in args if x[0] != '<'][0])
+            except ValueError:
+                await ctx.send(embed=discord.Embed(
+                    title="Quest ID could not be found!",
+                    colour=Dependencies.error_embed_colour
+                ))
+                return
+        else:
+            await ctx.send(embed=discord.Embed(
+                title="Quest ID could not be found!",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
 
-        result = Quest.Quest.complete_quest(int(''.join([i for i in user if i in '1 2 3 4 5 6 7 8 9 0'.split()])),
-                                            quest_id)
-        if result[0]:
-            target: Quest.Quest = [x for x in Quest.Quest.quests if x.id == quest_id][0]
+        users = []
+        for x in ctx.message.mentions:
+            users.append(User.User.fetch_user(x.id, x.name))
 
+        if len(users) <= 0:
+            await ctx.send(embed=discord.Embed(
+                title="Invalid users!",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+
+        if not (quest_id in [x.id for x in Quest.Quest.quests]):
+            await ctx.send(embed=discord.Embed(
+                title="Invalid quest id!",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+
+        target:Quest.Quest = [x for x in Quest.Quest.quests if x.id == quest_id][0]
+
+        for x in users:
+            Quest.Quest.complete_quest(x.user_id, quest_id)
+
+        newline = '\n'
         await ctx.send(embed=discord.Embed(
-            title=result[1],
-            description=f"Quest name : {target.name}" if result[0] else '',
-            colour=Dependencies.success_embed_colour if result[0] else Dependencies.error_embed_colour
+            title=f'{len(users)} user{"s" if (len(users) > 1) else ""} completed the quest succesfully!',
+            description=f'Quest name : {target.name}\n'
+                        f'\n'
+                        f'**Users**\n'
+                        f'{newline.join([f" - {x.username}" for x in users])}',
+            colour=Dependencies.success_embed_colour
         ))
+
+
+        # result = Quest.Quest.complete_quest(int(''.join([i for i in user if i in '1 2 3 4 5 6 7 8 9 0'.split()])),
+        #                                     quest_id)
+        # if result[0]:
+        #     target: Quest.Quest = [x for x in Quest.Quest.quests if x.id == quest_id][0]
+
+        # await ctx.send(embed=discord.Embed(
+        #     #title=result[1],
+        #     #description=f"Quest name : {target.name}" if result[0] else '',
+        #     #colour=Dependencies.success_embed_colour if result[0] else Dependencies.error_embed_colour
+        # ))
         Quest.Quest.save()
 
     @commands.has_permissions(administrator=True)
@@ -414,7 +462,9 @@ def init(client):
                   f"Next daily points : <t:{user.last_daily_points + 86400}>"
         )
         incomplete_quests = [f'`{str(x.id).rjust(2, "0")}`| {x.name}' for x in Quest.Quest.quests if
-                             user.user_id not in x.users_completed]
+                             x.is_ongoing and
+                             (user.user_id not in x.users_completed)
+                             ]
         final.add_field(
             name="Unfinished quests",
             value='\n'.join(incomplete_quests) if (len(incomplete_quests) > 0) else 'Nothing to show here'
@@ -427,7 +477,10 @@ def init(client):
     @client.command()
     async def give_points(ctx, *args):
         if len(ctx.message.mentions) > 0:
-            user: User.User = User.User.fetch_user(ctx.message.mentions[0].id, ctx.message.mentions[0].name)
+            #user: User.User = User.User.fetch_user(ctx.message.mentions[0].id, ctx.message.mentions[0].name)
+            users = []
+            for x in ctx.message.mentions:
+                users.append(User.User.fetch_user(x.id, x.name))
             try:
                 amounts = [x for x in args if x[0] in '-,1,2,3,4,5,6,7,8,9,0'.split(',')]
                 if len(amounts) > 0:
@@ -450,12 +503,32 @@ def init(client):
                 colour=Dependencies.error_embed_colour
             ))
             return
-        user.points += amount
-        await ctx.send(embed=discord.Embed(
-            title=f"{amount} quest points successfully given to {user.username}!",
-            description=f"{user.points - amount} -> {user.points}",
-            colour=Dependencies.success_embed_colour
-        ))
+        for x in users:
+            x.points += amount
+        #user.points += amount
+        if len(users) < 2:
+            await ctx.send(embed=discord.Embed(
+                title=f"{amount} quest points successfully given to {users[0].username}!",
+                description=f"{users[0].points - amount} -> {users[0].points}",
+                colour=Dependencies.success_embed_colour
+            ))
+        else:
+            final = discord.Embed(
+                title=f"{amount} quest points successfully given to {len(users)} users!",
+                colour=Dependencies.success_embed_colour
+            )
+
+            final.add_field(
+                name="Users",
+                value='\n'.join([f' - {x.username}' for x in users])
+            )
+            final.add_field(
+                name="Points",
+                value='\n'.join([f'{x.points - amount} -> {x.points}' for x in users])
+            )
+
+            await ctx.send(embed=final)
+
 
     @client.command()
     async def leaderboard(ctx):
@@ -481,6 +554,22 @@ def init(client):
             text=f"Showing {len(User.User.users) if (len(User.User.users) < cap) else cap} out of {len(User.User.users)} users"
         )
         await ctx.send(embed=final)
+
+    @client.command()
+    async def save_data(ctx):
+        try:
+            Quest.Quest.save()
+            User.User.save()
+        except Exception as e:
+            await ctx.send(embed=discord.Embed(
+                title=f"Error : {e}",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+        await ctx.send(embed=discord.Embed(
+            title="Saving succesful",
+            colour=Dependencies.success_embed_colour
+        ))
 
     @client.command()
     async def fetch_data(ctx):
