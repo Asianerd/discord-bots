@@ -81,7 +81,7 @@ class Quest:
         Quest.quests.append(self)
 
     def get_info(self):
-        return f"`{str(self.id).rjust(2, '0')}`| **{self.name}**\n" \
+        return f"`{str(self.id).rjust(2, '0')}`| **{self.name}** {'' if self.is_ongoing else '_(Closed)_'}\n" \
                f" - {self.description[:150]+'...' if (len(self.description) >= 150) else self.description}\n"
 
     def add_completed_user(self, user_id):
