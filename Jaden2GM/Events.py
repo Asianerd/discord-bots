@@ -39,8 +39,8 @@ def init(client):
             if result:
                 await message.channel.send(embed=discord.Embed(
                     title=f"Thanks for claiming today's daily points, {message.author.name}",
-                    description=f"_5 Quest Points have been added to the Leaderboard!_\n"
-                                f"_{user.points - 5} -> {user.points}_",
+                    description=f"_{5 + user.streak} Quest Points have been added to the Leaderboard!_\n"
+                                f"_{user.points - (5 + user.streak)} -> {user.points}_",
                     colour=Dependencies.default_embed_colour
                 ))
             else:
@@ -459,7 +459,8 @@ def init(client):
                   f"Quests completed : {user.quests_completed()}\n"
                   f"\n"
                   f"Last daily points : <t:{user.last_daily_points}>\n"
-                  f"Next daily points : <t:{user.last_daily_points + 86400}>"
+                  f"Next daily points : <t:{user.last_daily_points + 86400}>\n"
+                  f"Streak : {user.streak}"
         )
         incomplete_quests = [f'`{str(x.id).rjust(2, "0")}`| {x.name}' for x in Quest.Quest.quests if
                              x.is_ongoing and

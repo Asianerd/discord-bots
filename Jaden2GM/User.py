@@ -23,7 +23,7 @@ class User:
     @staticmethod
     def load():
         User.users = []
-        with open('users.json', 'r') as file:
+        with open('users.json', 'r', encoding='utf-8') as file:
             data_file = json.load(file)
             for x in data_file.items():
                 data = x[1]
@@ -51,6 +51,8 @@ class User:
 
         self.last_daily_points = 0
 
+        self.streak = 0
+
         User.users.append(self)
 
     def update_name(self, name):
@@ -61,8 +63,15 @@ class User:
         return len([x for x in Quest.Quest.quests if self.user_id in x.users_completed])
 
     def daily_points(self):
-        if (int(time.time()) - self.last_daily_points) >= 86400:
-            self.points += 5
+        day = 86400
+        if (int(time.time()) - self.last_daily_points) >= day:
+
+            if (int(time.time()) - self.last_daily_points) <= (day * 2):
+                self.streak += 1
+            else:
+                self.streak = 0
+
+            self.points += 5 + self.streak
             self.last_daily_points = int(time.time())
             return True
         return False
