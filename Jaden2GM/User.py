@@ -6,6 +6,8 @@ import Quest
 
 class User:
     users = []
+    daily_length = 43200
+    #daily_length = 10
 
     @staticmethod
     def initialize():
@@ -63,15 +65,17 @@ class User:
         return len([x for x in Quest.Quest.quests if self.user_id in x.users_completed])
 
     def daily_points(self):
-        day = 86400
-        if (int(time.time()) - self.last_daily_points) >= day:
+        if (int(time.time()) - self.last_daily_points) >= User.daily_length:
 
-            if (int(time.time()) - self.last_daily_points) <= (day * 2):
+            if (int(time.time()) - self.last_daily_points) <= (User.daily_length * 2):
                 self.streak += 1
             else:
                 self.streak = 0
 
             self.points += 5 + self.streak
             self.last_daily_points = int(time.time())
+
+            if self.streak >= 30:
+                self.streak = 0
             return True
         return False

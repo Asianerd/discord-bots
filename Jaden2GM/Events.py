@@ -46,7 +46,7 @@ def init(client):
             else:
                 await message.channel.send(embed=discord.Embed(
                     title="You have already claimed today's daily points!",
-                    description=f"Try again at <t:{user.last_daily_points + 86400}>",
+                    description=f"Try again at <t:{user.last_daily_points + User.User.daily_length}>",
                     colour=Dependencies.error_embed_colour
                 ))
         else:
@@ -459,7 +459,7 @@ def init(client):
                   f"Quests completed : {user.quests_completed()}\n"
                   f"\n"
                   f"Last daily points : <t:{user.last_daily_points}>\n"
-                  f"Next daily points : <t:{user.last_daily_points + 86400}>\n"
+                  f"Next daily points : <t:{user.last_daily_points + User.User.daily_length}>\n"
                   f"Streak : {user.streak}"
         )
         incomplete_quests = [f'`{str(x.id).rjust(2, "0")}`| {x.name}' for x in Quest.Quest.quests if
