@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import random
 
 
 def colour(_random=False):
@@ -55,11 +56,9 @@ def uptime_string(enoch_time):
 def beautify_dict(d, indent=0):
     final = ''
     for key, value in d.items():
-        #print('\t' * indent + str(key))
         final += '\t' * indent + str(key)
         if isinstance(value, dict):
             beautify_dict(value, indent+1)
         else:
-            #print('\t' * (indent+1) + str(value))
             final += '\t' * (indent+1) + str(value)
     return final

@@ -1,13 +1,12 @@
 import json
 import time
-
 import Quest
+import game
 
 
 class User:
     users = []
     daily_length = 43200
-    #daily_length = 10
 
     @staticmethod
     def initialize():
@@ -55,6 +54,24 @@ class User:
 
         self.streak = 0
 
+        self.inventory = {
+            game.ItemType.consumable.name: {
+
+            },
+            game.ItemType.equipment.name: {
+
+            }
+        }
+        """
+        Consumables:{
+                        'bread':10,
+                        'ironskin':15
+                    },
+        Equipment:  {
+                        'iron_armour':5
+                    }
+        """
+
         User.users.append(self)
 
     def update_name(self, name):
@@ -79,3 +96,19 @@ class User:
                 self.streak = 0
             return True
         return False
+
+    def append_inventory(self, _type, _class, amount):
+        key = str(_type.name)           # Eg. Bread, Apple pie
+        class_type = str(_class.name)   # Eg. Equipment, Consumables
+        #class_type = _class   # Eg. Equipment, Consumables
+
+        if not (key in self.inventory[class_type].keys()):
+            self.inventory[class_type][key] = 0
+
+        self.inventory[class_type][key] += amount
+
+        final = {}
+        for x in self.inventory.items():
+            final[x[0]] = dict(sorted(x[1].items()))
+        self.inventory = final
+

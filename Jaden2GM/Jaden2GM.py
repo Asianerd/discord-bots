@@ -6,11 +6,13 @@ import Events
 import Quest
 import User
 
+import shop_module
+
 # So basically, the bot is about quest system & basic conversation
 """
 Name : Jaden2GM
 
-Quest system
+Quest system // Done
     - Based on other games
     - Manual checking if someone completes the quest
 
@@ -28,5 +30,6 @@ client = commands.Bot(
 )
 
 Events.init(client)
+shop_module.init(client)
 
 client.run(Dependencies.token)

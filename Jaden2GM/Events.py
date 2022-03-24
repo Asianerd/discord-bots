@@ -8,6 +8,9 @@ import Dependencies
 import Formatting
 import Quest
 import User
+import game
+from game import Consumable
+from game import Equipment
 
 
 def find_in_message(key, message):
@@ -15,6 +18,24 @@ def find_in_message(key, message):
         if x[0:len(key)] == key:
             return x[len(key) + 1:]
     return False
+
+
+def find_argument(message: str):
+    """
+    0: content
+    1: amount
+    """
+    amount = 1
+    final = []
+    for x in message.split(" "):
+        if x.isdigit():
+            try:
+                amount = int(x)
+            except ValueError:
+                pass
+        else:
+            final.append(x)
+    return [' '.join(final[1:]), amount]
 
 
 def init(client):
@@ -35,20 +56,10 @@ def init(client):
         user.update_name(message.author.name)
 
         if str(message.content).lower() == 'jaden points':
-            result = user.daily_points()
-            if result:
-                await message.channel.send(embed=discord.Embed(
-                    title=f"Thanks for claiming today's daily points, {message.author.name}",
-                    description=f"_{5 + user.streak} Quest Points have been added to the Leaderboard!_\n"
-                                f"_{user.points - (5 + user.streak)} -> {user.points}_",
-                    colour=Dependencies.default_embed_colour
-                ))
-            else:
-                await message.channel.send(embed=discord.Embed(
-                    title="You have already claimed today's daily points!",
-                    description=f"Try again at <t:{user.last_daily_points + User.User.daily_length}>",
-                    colour=Dependencies.error_embed_colour
-                ))
+            await message.channel.send(embed=discord.Embed(
+                title="`jaden points` has been replaced by `>daily`.",
+                colour=Formatting.colour()
+            ))
         else:
             if 'jaden' in str(message.content).lower():
                 if str(message.content)[0:5].lower() == 'jaden':
@@ -159,6 +170,10 @@ def init(client):
             await client.change_presence(status=arg_dict['args'])
         else:
             await ctx.send('Argument not in activity list')
+
+    @client.command(hidden=True)
+    async def get_emoji(ctx, emoji: discord.Emoji):
+        await ctx.send(f"`{emoji}`")
 
     @client.command()
     async def quest_list(ctx, args='1'):
@@ -275,7 +290,7 @@ def init(client):
     @commands.has_permissions(administrator=True)
     @client.command(hidden=True)
     async def complete_quest(ctx, *args):
-        #user = [x for x in args if x[0] == '<'][0]
+        # user = [x for x in args if x[0] == '<'][0]
         if len([x for x in args if x[0] != '<']) > 0:
             try:
                 quest_id = int([x for x in args if x[0] != '<'][0])
@@ -310,7 +325,7 @@ def init(client):
             ))
             return
 
-        target:Quest.Quest = [x for x in Quest.Quest.quests if x.id == quest_id][0]
+        target: Quest.Quest = [x for x in Quest.Quest.quests if x.id == quest_id][0]
 
         for x in users:
             Quest.Quest.complete_quest(x.user_id, quest_id)
@@ -324,7 +339,6 @@ def init(client):
                         f'{newline.join([f" - {x.username}" for x in users])}',
             colour=Dependencies.success_embed_colour
         ))
-
 
         # result = Quest.Quest.complete_quest(int(''.join([i for i in user if i in '1 2 3 4 5 6 7 8 9 0'.split()])),
         #                                     quest_id)
@@ -472,13 +486,44 @@ def init(client):
         )
 
         final.set_thumbnail(url=discord_user.avatar_url)
+        final.set_footer(text='Use >inventory to view inventory!')
         await ctx.send(embed=final)
+
+    @client.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def daily(ctx):
+        user = User.User.fetch_user(ctx.message.author.id, ctx.message.author.name)
+
+        result = user.daily_points()
+        if result:
+            await ctx.send(embed=discord.Embed(
+                title=f"Thanks for claiming today's daily points, {ctx.message.author.name}",
+                description=f"_{5 + user.streak} Quest Points have been added to the Leaderboard!_\n"
+                            f"_{user.points - (5 + user.streak)} -> {user.points}_",
+                colour=Dependencies.default_embed_colour
+            ))
+        else:
+            await ctx.send(embed=discord.Embed(
+                title="You have already claimed today's daily points!",
+                description=f"Try again at <t:{user.last_daily_points + User.User.daily_length}>",
+                colour=Dependencies.error_embed_colour
+            ))
+
+    @daily.error
+    async def daily_error(ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.message.delete()
+            x = await ctx.send(embed=discord.Embed(
+                title=f"`>daily` command is on cooldown for {error.retry_after:.1f}s",
+                colour=Dependencies.error_embed_colour
+            ))
+            await x.delete(delay=1)
 
     @commands.has_permissions(administrator=True)
     @client.command()
     async def give_points(ctx, *args):
         if len(ctx.message.mentions) > 0:
-            #user: User.User = User.User.fetch_user(ctx.message.mentions[0].id, ctx.message.mentions[0].name)
+            # user: User.User = User.User.fetch_user(ctx.message.mentions[0].id, ctx.message.mentions[0].name)
             users = []
             for x in ctx.message.mentions:
                 users.append(User.User.fetch_user(x.id, x.name))
@@ -506,7 +551,7 @@ def init(client):
             return
         for x in users:
             x.points += amount
-        #user.points += amount
+        # user.points += amount
         if len(users) < 2:
             await ctx.send(embed=discord.Embed(
                 title=f"{amount} quest points successfully given to {users[0].username}!",
@@ -529,7 +574,6 @@ def init(client):
             )
 
             await ctx.send(embed=final)
-
 
     @client.command()
     async def leaderboard(ctx):
@@ -587,3 +631,84 @@ def init(client):
                                 f"```",
                     colour=Dependencies.default_embed_colour
                 ))
+
+    @client.command()
+    async def inventory(ctx, *args):
+        if len(ctx.message.mentions) > 0:
+            user = User.User.fetch_user(ctx.message.mentions[0].id, ctx.message.mentions[0].name)
+        else:
+            user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
+
+        if not args:
+            page = 1
+        else:
+            in_message = find_argument(ctx.message.content)
+            page = in_message[1]
+
+        amount_per_page = 10
+        max_page = math.ceil((len(user.inventory[game.ItemType.consumable.name]) / amount_per_page) - 1)
+        """
+        0 - 0-10
+        1 - 11-20
+        2 - 21-30
+        3 - 31-40
+
+        35, p = 3
+        """
+        if page > max_page:
+            page = max_page
+
+        page_content = [Consumable.get_enum(i) for i in list(user.inventory[game.ItemType.consumable.name].keys())[
+                                                        page * amount_per_page:(page + 1) * amount_per_page]]
+        final = ""
+        for x in page_content:
+            final += f"{Consumable.item_symbols[x]} **{Consumable.display_names[x]}** - {user.inventory[game.ItemType.consumable.name][x.name]}\n"
+
+        final_embed = discord.Embed(
+            title=f"{user.username}'s Inventory",
+            description=f"{final}",
+            colour=Formatting.colour()
+        )
+        final_embed.set_footer(text=f"Page {page + 1}/{max_page + 1}")
+        await ctx.send(embed=final_embed)
+
+    @client.command()
+    async def use(ctx, *args):
+        user = User.User.fetch_user(ctx.message.author.id, ctx.message.author.name)
+        available = '\n'.join(
+            [f"{Consumable.item_symbols[Consumable.get_enum(x)]} **{Consumable.display_names[Consumable.get_enum(x)]}**" for x in
+             user.inventory[game.ItemType.consumable.name].keys()])
+        final = discord.Embed(
+                title="",
+                description=f"These are some of the usable items:\n{available}",
+                colour=Dependencies.error_embed_colour)
+        if not args:
+            final.title = "Item name not provided!"
+            await ctx.send(embed=final)
+            return
+
+        in_message = find_argument(ctx.message.content)
+        _item_name = in_message[0]
+        item_type = [Consumable.get_enum(x) for x in user.inventory[game.ItemType.consumable.name] if Consumable.display_names[Consumable.get_enum(x)].lower() == _item_name.lower()]
+        if not item_type:
+            final.title = "Item not found!"
+            await ctx.send(embed=final)
+            return
+
+        item = Consumable.collection[item_type[0]]
+        amount = in_message[1]
+
+        if amount <= 0:
+            amount = 1
+
+        if amount > user.inventory[game.ItemType.consumable.name][item.item_id.name]:
+            final.title = f'Not enough in inventory!'
+            final.description = ''
+            await ctx.send(embed=final)
+            return
+
+        final.title = f'Used {amount} {item.name}!'
+        final.description = ''
+        final.colour = Dependencies.success_embed_colour
+        user.inventory[game.ItemType.consumable.name][item.item_id.name] -= amount
+        await ctx.send(embed=final)

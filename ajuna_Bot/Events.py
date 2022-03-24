@@ -1,3 +1,5 @@
+import discord
+
 import Dependencies
 import alexa_reply
 import asyncio
