@@ -1,7 +1,7 @@
 import json
 import time
 import Quest
-import game
+from Game import ItemClass
 
 
 class User:
@@ -18,13 +18,13 @@ class User:
         final = {}
         for x in User.users:
             final[str(x.user_id)] = x.__dict__
-        with open('users.json', 'w', encoding='utf-8') as file:
+        with open('Data/users.json', 'w', encoding='utf-8') as file:
             json.dump(final, file, ensure_ascii=False, indent=4)
 
     @staticmethod
     def load():
         User.users = []
-        with open('users.json', 'r', encoding='utf-8') as file:
+        with open('Data/users.json', 'r', encoding='utf-8') as file:
             data_file = json.load(file)
             for x in data_file.items():
                 data = x[1]
@@ -49,16 +49,14 @@ class User:
         self.user_id = user_id
 
         self.points = 0
-
         self.last_daily_points = 0
-
         self.streak = 0
 
         self.inventory = {
-            game.ItemType.consumable.name: {
+            ItemClass.ItemType.consumable.name: {
 
             },
-            game.ItemType.equipment.name: {
+            ItemClass.ItemType.equipment.name: {
 
             }
         }

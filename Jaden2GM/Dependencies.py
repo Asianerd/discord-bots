@@ -18,7 +18,7 @@ quests_per_page = 0
 def init():
     global token, command_prefix, master_id, default_embed_colour, success_embed_colour, error_embed_colour,\
         quests_per_page, help_info
-    with open('token.json', 'r') as t:
+    with open('Data/token.json', 'r') as t:
         token = json.load(t)['token']
 
     with open('help.json', 'r') as file:

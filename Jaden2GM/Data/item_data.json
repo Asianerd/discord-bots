@@ -1,0 +1,65 @@
+{
+  "consumable": {
+    "bread": {
+      "price": 5,
+      "description": "Crunchy and tasty...",
+
+      "health_return": 5,
+      "effects": {}
+    },
+    "apple": {
+      "price": 10,
+      "description": "Juicy and sweet red apple.",
+
+      "health_return": 10,
+      "effects": {}
+    },
+    "apple_pie": {
+      "price": 25,
+      "description": "Smoking hot and it smells delicious.",
+
+      "health_return": 25,
+      "effects": {}
+    },
+    "golden_apple": {
+      "price": 50,
+      "description": "It's shine enchants you...",
+
+      "health_return": 50,
+      "effects": {
+        "regeneration": 5
+      }
+    },
+
+    "ironskin_potion": {
+      "price": 20,
+      "description": "Hard to swallow.",
+
+      "health_return": 0,
+      "effects": {
+        "ironskin": 5
+      }
+    },
+    "wrath_potion": {
+      "price": 20,
+      "description": "Bitter, like anger.",
+
+      "health_return": 0,
+      "effects": {
+        "wrath": 5
+      }
+    },
+    "adrenaline_vial": {
+      "price": 50,
+      "description": "Don't think this is good for your heart...",
+
+      "health_return": 0,
+      "effects": {
+        "adrenaline": 3
+      }
+    }
+  },
+  "equipment": {
+
+  }
+}

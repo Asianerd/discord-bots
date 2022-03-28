@@ -6,7 +6,7 @@ import json
 
 final = {}
 
-with open('Jaden2GM/users.json', 'r', encoding='utf-8') as file:
+with open('Jaden2GM/Data/users.json', 'r', encoding='utf-8') as file:
     data = json.load(file)
     for x in data.items():
         final[x[0]] = x[1]
@@ -15,6 +15,6 @@ with open('Jaden2GM/users.json', 'r', encoding='utf-8') as file:
             "equipment": {}
         }
 
-with open('Jaden2GM/users.json', 'w', encoding='utf-8') as file:
+with open('Jaden2GM/Data/users.json', 'w', encoding='utf-8') as file:
     json.dump(final, file, ensure_ascii=False, indent=4)
 

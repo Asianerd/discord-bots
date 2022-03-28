@@ -1,5 +1,9 @@
 from enum import Enum
-import enum
+import json
+from . import StatusEffects
+# i dont know why a normal import wont work
+
+item_stats = {}
 
 
 class Consumable:
@@ -8,13 +12,23 @@ class Consumable:
     item_symbols = {}
     display_names = {}
 
-    def __init__(self, _id, _class, price, description):
+    consumable_stats = {}
+
+    def __init__(self, _id, _class):
         self.item_id = _id
         self.item_class = _class
 
+        data_table = item_stats['consumable'][self.item_id.name]
+
         self.name = Consumable.display_names[_id]
-        self.price = price
-        self.description = description
+        self.price = data_table['price']
+        self.description = data_table['description']
+
+        self.effects = {}
+        for x in dict(data_table['effects']).items():
+            self.effects[StatusEffects.get_enum(x[0])] = x[1]
+        # effect enum : duration
+        self.health_return = data_table['health_return']  # how much health is gained from using this
 
     @classmethod
     def initialize(cls):
@@ -26,7 +40,7 @@ class Consumable:
 
             Consumable.ItemID.ironskin_potion: "<:ironskin_potion:956411586975793162>",
             Consumable.ItemID.wrath_potion: "<:wrath_potion:956412709023399937>",
-            Consumable.ItemID.adrenaline_vial: "<:adrenaline_vial:956412708834672671>"
+            Consumable.ItemID.adrenaline_vial: "<:adrenaline_vial:956412708834672671>",
         }
 
         Consumable.display_names = {
@@ -37,21 +51,21 @@ class Consumable:
 
             Consumable.ItemID.ironskin_potion: "Ironskin Potion",
             Consumable.ItemID.wrath_potion: "Wrath Potion",
-            Consumable.ItemID.adrenaline_vial: "Adrenaline Vial"
+            Consumable.ItemID.adrenaline_vial: "Adrenaline Vial",
         }
 
-        cls.collection[Consumable.ItemID.bread] = Consumable(Consumable.ItemID.bread, Consumable.ItemClass.food, 5, "Prevents hunger for 3 rounds\nCrunchy and tasty...")
-        cls.collection[Consumable.ItemID.apple] = Consumable(Consumable.ItemID.apple, Consumable.ItemClass.food, 10, "Prevents hunger for 4 rounds\nA juicy and sweet red apple.")
-        cls.collection[Consumable.ItemID.apple_pie] = Consumable(Consumable.ItemID.apple_pie, Consumable.ItemClass.food, 25, "Prevents hunger for 6 rounds\nSmoking hot and smell delicious...")
-        cls.collection[Consumable.ItemID.golden_apple] = Consumable(Consumable.ItemID.golden_apple, Consumable.ItemClass.food, 50, "Prevents hunger for 10 rounds\nIt's shine enchants you...")
-
-        cls.collection[Consumable.ItemID.ironskin_potion] = Consumable(Consumable.ItemID.ironskin_potion, Consumable.ItemClass.potion, 20, "Increases defence by 10\nHard to swallow.")
-        cls.collection[Consumable.ItemID.wrath_potion] = Consumable(Consumable.ItemID.wrath_potion, Consumable.ItemClass.potion, 20, "Increase damage by 10%\nBitter, like anger.")
-        cls.collection[Consumable.ItemID.adrenaline_vial] = Consumable(Consumable.ItemID.adrenaline_vial, Consumable.ItemClass.potion, 50, "Increase damage by 25% and reduce defense by 10%\nHolding this in your hand makes you feel powerful...")
+        for x in Consumable.ItemID:
+            cls.collection[x] = Consumable(x, [Consumable.ItemClass.food, Consumable.ItemClass.potion][x in [
+                Consumable.ItemID.ironskin_potion,
+                Consumable.ItemID.wrath_potion,
+                Consumable.ItemID.adrenaline_vial
+            ]])
 
     def readable(self):
+        newline = '\n'
         return f"{Consumable.item_symbols[self.item_id]} **{self.name}**   - ${self.price}\n" \
-               f"*{self.description}*\n"
+               f"*{self.description}*\n" \
+               f"{('`Health : ' + str(self.health_return) + '`' + newline if (self.health_return != 0) else '')}" + (f"Effects : **{', '.join([StatusEffects.EffectContainer.display_names[x[0]] for x in self.effects.items()])}**" if self.effects else '') + "\n"
 
     @classmethod
     def get_enum(cls, name):
@@ -114,6 +128,9 @@ class ItemType(Enum):
 
 
 def initialize():
+    global item_stats
+    with open('Data/item_data.json', 'r', encoding='utf-8') as file:
+        item_stats = json.load(file)
     Consumable.initialize()
     Equipment.initialize()
 

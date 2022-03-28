@@ -27,13 +27,13 @@ class Quest:
         for x in Quest.quests:
             object_dictionary = x.__dict__
             final[str(x.id)] = object_dictionary
-        with open('quest.json', 'w', encoding='utf-8') as file:
+        with open('Data/quest.json', 'w', encoding='utf-8') as file:
             json.dump(final, file, ensure_ascii=False, indent=4)
 
     @staticmethod
     def load():
         Quest.quests = []
-        with open('quest.json', 'r') as file:
+        with open('Data/quest.json', 'r') as file:
             data_file: dict = json.load(file)
             for x in data_file.items():
                 data = x[1]

@@ -1,0 +1,21 @@
+{
+    "517998886141558786": {
+        "name": "ajian_nedo",
+        "user_id": 517998886141558786,
+        "health": {
+            "min": 0,
+            "max": 100,
+            "regeneration": 1,
+            "current": -125
+        },
+        "effects": {
+            "effects": {}
+        },
+        "current_weapon": null,
+        "enemies": [],
+        "battle_results": [
+            0,
+            0
+        ]
+    }
+}

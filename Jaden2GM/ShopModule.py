@@ -1,16 +1,17 @@
 import discord
+import math
+
 import Formatting
-import game
 import User
 import Dependencies
 
-from game import Consumable
-from game import Equipment
+from Game import ItemClass
+from Game.ItemClass import Consumable, Equipment, ItemType
 
 
 class Shop:
     selling = {
-        game.ItemType.equipment: [
+        ItemClass.ItemType.consumable: [
             Consumable.ItemID.bread,
             Consumable.ItemID.apple,
             Consumable.ItemID.apple_pie,
@@ -20,7 +21,7 @@ class Shop:
             Consumable.ItemID.wrath_potion,
             Consumable.ItemID.adrenaline_vial
         ],
-        game.ItemType.consumable: [
+        ItemClass.ItemType.equipment: [
             Equipment.ItemID.iron_shortsword,
             Equipment.ItemID.platinum_shortsword,
         ]
@@ -29,34 +30,38 @@ class Shop:
 
 def get_item(name):
     # returns a list of all items with same name
-    return [x for x in game.all_collections() if x.name.lower() == name.lower()]
-
-
-def find_argument(message: str):
-    """
-    0: content
-    1: amount
-    """
-    amount = 1
-    final = []
-    for x in message.split(" "):
-        if x.isdigit():
-            try:
-                amount = int(x)
-            except ValueError:
-                pass
-        else:
-            final.append(x)
-    return [' '.join(final[1:]), amount]
+    return [x for x in ItemClass.all_collections() if x.name.lower() == name.lower()]
 
 
 def init(client):
-    game.initialize()
+    ItemClass.initialize()
 
     @client.command()
-    async def shop(ctx, args=''):
-        final = '\n'.join([x.readable() for x in Consumable.collection.values()])
-        await ctx.send(embed=discord.Embed(title="Shop", description=final, colour=Formatting.colour()))
+    async def shop(ctx, *args):
+        page = Formatting.find_argument(ctx.message.content)[1] - 1
+        amount_per_page = 4
+        if page < 0:
+            page = 1
+
+        max_page = math.ceil((len(Shop.selling[ItemType.consumable]) / amount_per_page) - 1)
+        if page > max_page:
+            page = max_page
+
+        final_embed = discord.Embed(
+            title="Shop",
+            colour=Formatting.colour()
+        )
+
+        page_data = Shop.selling[ItemType.consumable][(amount_per_page * page):(amount_per_page * (page + 1))]
+        page_data = [page_data[0:int(amount_per_page/2)], page_data[int(amount_per_page/2):]]
+        for i in page_data:
+            final = ''
+            for x in i:
+                final += ItemClass.Consumable.collection[x].readable() + '\n'
+            final_embed.add_field(name='Items', value=final)
+
+        final_embed.set_footer(text=f'Page {page+1}/{max_page+1}')
+        await ctx.send(embed=final_embed)
 
     @client.command()
     async def buy(ctx, *args):
@@ -68,7 +73,7 @@ def init(client):
             ))
             return
 
-        in_message = find_argument(ctx.message.content)
+        in_message = Formatting.find_argument(ctx.message.content)
 
         # name = ' '.join(args[0:-1]).lower() if len(args) >= 2 else args[0].lower()
 
@@ -76,7 +81,7 @@ def init(client):
 
         result = get_item(name)
         if not result:
-            suggestions = [f"_{x.name}_   - ${x.price}" for x in game.all_collections() if name[0] == x.name[0].lower()]
+            suggestions = [f"_{x.name}_   - ${x.price}" for x in ItemClass.all_collections() if name[0] == x.name[0].lower()]
             await ctx.send(embed=discord.Embed(
                 title=f"No items with the name '{name}' were found.",
                 description=f"Did you mean :\n" + '\n'.join(
@@ -111,7 +116,7 @@ def init(client):
             ))
             return
 
-        user.append_inventory(item_result.item_id, game.ItemType.consumable, amount)
+        user.append_inventory(item_result.item_id, ItemClass.ItemType.consumable, amount)
         user.points -= price
         await ctx.send(embed=discord.Embed(
             title=f"Bought {amount} {item_result.name}",

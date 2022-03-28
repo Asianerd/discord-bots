@@ -23,7 +23,7 @@ def get_ping_colour(_i):
     return _r, _g
 
 
-def dynamic_color(i):
+def dynamic_color(i):  # too lazy to rename to the bri'ish colour
     """Enter a float from 0-1 and will return red and green values accordingly,
     with 0 being fully green and 1 being fully red"""
     r = 255 * i
@@ -62,3 +62,20 @@ def beautify_dict(d, indent=0):
         else:
             final += '\t' * (indent+1) + str(value)
     return final
+
+def find_argument(message: str):
+    """
+    0: content
+    1: amount
+    """
+    amount = 1
+    final = []
+    for x in message.split(" "):
+        if x.isdigit():
+            try:
+                amount = int(x)
+            except ValueError:
+                pass
+        else:
+            final.append(x)
+    return [' '.join(final[1:]), amount]
