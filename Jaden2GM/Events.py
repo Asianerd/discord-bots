@@ -42,7 +42,7 @@ def init(client):
                 title="`jaden points` has been replaced by `>daily`.",
                 colour=Formatting.colour()
             ))
-        elif str(message.content).lower() == 'paden joints':
+        elif str(message.content).lower() == 'paden joints':  # :)
             msg = await message.reply(':)')
             await msg.delete(delay=3)
         else:
