@@ -6,13 +6,79 @@
             "min": 0,
             "max": 100,
             "regeneration": 1,
-            "current": -125
+            "current": 40
         },
         "effects": {
             "effects": {}
         },
         "current_weapon": null,
-        "enemies": [],
+        "enemies": [
+            {
+                "species": "zombie",
+                "name": "Zombie",
+                "health": {
+                    "min": 0,
+                    "max": 100,
+                    "regeneration": 0,
+                    "current": 100
+                },
+                "damage": 6,
+                "defense": 2,
+                "effects": {}
+            },
+            {
+                "species": "zombie",
+                "name": "Zombie",
+                "health": {
+                    "min": 0,
+                    "max": 100,
+                    "regeneration": 0,
+                    "current": 100
+                },
+                "damage": 6,
+                "defense": 2,
+                "effects": {}
+            },
+            {
+                "species": "zombie",
+                "name": "Zombie",
+                "health": {
+                    "min": 0,
+                    "max": 100,
+                    "regeneration": 0,
+                    "current": 100
+                },
+                "damage": 6,
+                "defense": 2,
+                "effects": {}
+            },
+            {
+                "species": "zombie",
+                "name": "Zombie",
+                "health": {
+                    "min": 0,
+                    "max": 100,
+                    "regeneration": 0,
+                    "current": 100
+                },
+                "damage": 6,
+                "defense": 2,
+                "effects": {}
+            },
+            {
+                "species": "zombie",
+                "name": "Zombie",
+                "health": {
+                    "min": 0,
+                    "max": 100,
+                    "regeneration": 0,
+                    "current": 100
+                },
+                "damage": 6,
+                "defense": 2,
+                "effects": {}
+            }
+        ],
         "battle_results": [
             0,
             0

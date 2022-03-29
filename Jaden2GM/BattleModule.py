@@ -8,32 +8,47 @@ import Formatting
 import User
 from Game import ItemClass, Battle
 from Game.ItemClass import Consumable
-from Game.Battle import BattleProfile
+from Game.Battle import BattleProfile, Enemy
+
+
+def regular_pattern(ctx):
+    BattleProfile.update_user(ctx.message.author.name, ctx.message.author.id)
+    return BattleProfile.fetch_user(ctx.message.author.id)
 
 
 def init(client):
+    Enemy.initialize()
     BattleProfile.load()
 
     @client.command()
-    async def stats(ctx):
-        BattleProfile.update_user(ctx.message.author.name, ctx.message.author.id)
-        profile = BattleProfile.fetch_user(ctx.message.author.id)
+    async def find_fight(ctx):
+        profile = regular_pattern(ctx)
+        profile.enemies.append(Enemy(Enemy.Species.zombie))
 
+        await profile.progress_game(ctx)
+
+    @client.command()
+    async def stats(ctx):
+        profile = regular_pattern(ctx)
         await profile.display_stats(ctx)
 
     @client.command()
     async def attack(ctx):
-        BattleProfile.update_user(ctx.message.author.name, ctx.message.author.id)
+        profile = regular_pattern(ctx)
+
+        await profile.progress_game(ctx)
         await ctx.send("attack")
 
     @client.command()
     async def dodge(ctx):
-        BattleProfile.update_user(ctx.message.author.name, ctx.message.author.id)
+        profile = regular_pattern(ctx)
+
+        await profile.progress_game(ctx)
         await ctx.send("dodge")
 
     @client.command()
     async def use(ctx, *args):
-        BattleProfile.update_user(ctx.message.author.name, ctx.message.author.id)
+        profile = regular_pattern(ctx)
 
         user = User.User.fetch_user(ctx.message.author.id, ctx.message.author.name)
         available = '\n'.join(
@@ -72,4 +87,10 @@ def init(client):
         final.description = ''
         final.colour = Dependencies.success_embed_colour
         user.inventory[ItemClass.ItemType.consumable.name][item.item_id.name] -= amount
+
+        profile.health.current += item.health_return
+        for x in item.effects.items():
+            profile.apply_effect(x[0], x[1])
+
         await ctx.send(embed=final)
+        await profile.display_stats(ctx)

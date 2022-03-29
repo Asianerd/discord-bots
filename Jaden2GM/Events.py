@@ -45,10 +45,13 @@ def init(client):
         elif str(message.content).lower() == 'paden joints':  # :)
             msg = await message.reply(':)')
             await msg.delete(delay=3)
-        else:
-            if 'jaden' in str(message.content).lower():
-                if str(message.content)[0:5].lower() == 'jaden':
-                    await message.reply(alexa_reply.reply(message.content[6:], 'Sheep', '<@517998886141558786>'))
+
+        # chatbot api is kinda wack rn, so im disabling AI as a hotfix
+
+        # else:
+        #     if 'jaden' in str(message.content).lower():
+        #         if str(message.content)[0:5].lower() == 'jaden':
+        #             await message.reply(alexa_reply.reply(message.content[6:], 'Sheep', '<@517998886141558786>'))
 
         await client.process_commands(message)
 

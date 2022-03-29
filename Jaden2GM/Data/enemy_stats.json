@@ -1,0 +1,38 @@
+{
+    "zombie": {
+        "species": "zombie",
+        "name": "Zombie",
+        "health": {
+            "min": 0,
+            "max": 100,
+            "regen": 0,
+            "starting_percent": 1
+        },
+        "damage": 6,
+        "defense": 2
+    },
+    "undead_miner": {
+        "species": "undead_miner",
+        "name": "Undead Miner",
+        "health": {
+            "min": 0,
+            "max": 120,
+            "regen": 0,
+            "starting_percent": 1
+        },
+        "damage": 14,
+        "defense": 8
+    },
+    "goblin": {
+        "species": "goblin",
+        "name": "Goblin",
+        "health": {
+            "min": 0,
+            "max": 70,
+            "regen": 0,
+            "starting_percent": 1
+        },
+        "damage": 9,
+        "defense": 0
+    }
+}
