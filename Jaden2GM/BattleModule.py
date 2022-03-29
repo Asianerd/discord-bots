@@ -1,6 +1,7 @@
 # commands and etc for battle
 
 import discord
+import random
 
 import Dependencies
 import Formatting
@@ -23,7 +24,7 @@ def init(client):
     @client.command()
     async def find_fight(ctx):
         profile = regular_pattern(ctx)
-        profile.enemies.append(Enemy(Enemy.Species.zombie))
+        profile.enemies.append(Enemy([Enemy.Species.zombie, Enemy.Species.undead_miner, Enemy.Species.goblin][random.randint(0, 2)]))
 
         await profile.progress_game(ctx)
 
@@ -33,11 +34,58 @@ def init(client):
         await profile.display_stats(ctx)
 
     @client.command()
-    async def attack(ctx):
+    async def attack(ctx, *args):
         profile = regular_pattern(ctx)
 
+        # if len(profile.enemies) == 1:
+        #     profile.attack(0)
+        # else:
+        #     if not args:
+        #         await ctx.send(embed=discord.Embed(
+        #             title="Invalid input!",
+        #             description=f"Please enter a number between 1 - {len(profile.enemies)}"
+        #         ))
+        #         return
+        #     else:
+        #         try:
+        #             index = int(args[0])
+        #         except ValueError:
+        #             await ctx.send(embed=discord.Embed(
+        #                 title="Invalid input!",
+        #                 description=f"Please enter a number between 1 - {len(profile.enemies)}"
+        #             ))
+        #             return
+
+        enemies_alive = len([x for x in profile.enemies if not x.is_dead()])
+
+        if enemies_alive <= 0:
+            await profile.progress_game(ctx)
+            return
+
+        try:
+            index = int(args[0])
+            if index > len(profile.enemies):
+                raise IndexError
+            if index <= 0:
+                raise IndexError
+            index -= 1
+        except Exception as e:
+            await ctx.send(embed=discord.Embed(
+                title="Invalid input!",
+                description=f"Please enter a number between 1 - {len(profile.enemies)}",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+
+        if profile.enemies[index].is_dead():
+            await ctx.send(embed=discord.Embed(
+                title="That enemy is already dead!",
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+
+        await profile.attack(ctx, index)
         await profile.progress_game(ctx)
-        await ctx.send("attack")
 
     @client.command()
     async def dodge(ctx):
@@ -88,7 +136,8 @@ def init(client):
         final.colour = Dependencies.success_embed_colour
         user.inventory[ItemClass.ItemType.consumable.name][item.item_id.name] -= amount
 
-        profile.health.current += item.health_return
+        #profile.health.current += item.health_return
+        profile.apply_health(item.health_return)
         for x in item.effects.items():
             profile.apply_effect(x[0], x[1])
 
