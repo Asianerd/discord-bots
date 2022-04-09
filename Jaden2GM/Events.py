@@ -160,8 +160,11 @@ def init(client):
             await ctx.send('Argument not in activity list')
 
     @client.command(hidden=True)
-    async def get_emoji(ctx, emoji: discord.Emoji):
-        await ctx.send(f"`{emoji}`")
+    async def get_emoji(ctx, *emoji: discord.Emoji):
+        final = ''
+        for x in emoji:
+            final += f'`{x}`\n'
+        await ctx.send(final)
 
     @client.command()
     async def quest_list(ctx, args='1'):
@@ -619,43 +622,3 @@ def init(client):
                                 f"```",
                     colour=Dependencies.default_embed_colour
                 ))
-
-    @client.command()
-    async def inventory(ctx, *args):
-        if len(ctx.message.mentions) > 0:
-            user = User.User.fetch_user(ctx.message.mentions[0].id, ctx.message.mentions[0].name)
-        else:
-            user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
-
-        if not args:
-            page = 1
-        else:
-            in_message = Formatting.find_argument(ctx.message.content)
-            page = in_message[1]
-
-        amount_per_page = 10
-        max_page = math.ceil((len(user.inventory[ItemClass.ItemType.consumable.name]) / amount_per_page) - 1)
-        """
-        0 - 0-10
-        1 - 11-20
-        2 - 21-30
-        3 - 31-40
-
-        35, p = 3
-        """
-        if page > max_page:
-            page = max_page
-
-        page_content = [Consumable.get_enum(i) for i in list(user.inventory[ItemClass.ItemType.consumable.name].keys())[
-                                                        page * amount_per_page:(page + 1) * amount_per_page]]
-        final = ""
-        for x in page_content:
-            final += f"{Consumable.item_symbols[x]} **{Consumable.display_names[x]}** - {user.inventory[ItemClass.ItemType.consumable.name][x.name]}\n"
-
-        final_embed = discord.Embed(
-            title=f"{user.username}'s Inventory",
-            description=f"{final}",
-            colour=Formatting.colour()
-        )
-        final_embed.set_footer(text=f"Page {page + 1}/{max_page + 1}")
-        await ctx.send(embed=final_embed)

@@ -1,4 +1,5 @@
 import json
+import random
 
 with open('data.json', 'r') as d:
     data_file = json.load(d)
@@ -21,7 +22,8 @@ def init():
     global token, command_prefix, master_id, default_embed_colour, success_embed_colour, error_embed_colour,\
         battle_embed_colour, quests_per_page, help_info
     with open('Data/token.json', 'r') as t:
-        token = json.load(t)['token']
+        _data = json.load(t)
+        token = _data[_data["version"]]
 
     with open('help.json', 'r') as file:
         help_info = json.load(file)
@@ -34,3 +36,7 @@ def init():
     battle_embed_colour = int(data_file['battle_embed_colour'])
 
     quests_per_page = int(data_file['quests_per_page'])
+
+
+def chance(c):
+    return random.randint(1, 100) <= c
