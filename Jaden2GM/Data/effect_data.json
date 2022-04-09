@@ -1,0 +1,29 @@
+{
+  "ironskin": {
+    "defense": 1.2
+  },
+  "wrath": {
+    "damage": 1.2
+  },
+  "adrenaline": {
+    "damage": 1.4,
+    "defense": 1.2,
+    "stamina_regen": 5
+  },
+  "regeneration": {
+    "health_regen": 5
+  },
+  "manic": {
+    "mana_regen": 5
+  },
+  "flexible": {
+    "dodge_chance": 100
+  },
+
+  "inexpeditus_inactus": {
+    "damage": 1000000
+  },
+  "inexpeditus_invictus": {
+    "dodge_chance": 1000
+  }
+}

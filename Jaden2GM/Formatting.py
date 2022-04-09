@@ -63,6 +63,7 @@ def beautify_dict(d, indent=0):
             final += '\t' * (indent+1) + str(value)
     return final
 
+
 def find_argument(message: str):
     """
     0: content
@@ -79,3 +80,63 @@ def find_argument(message: str):
         else:
             final.append(x)
     return [' '.join(final[1:]), amount]
+
+
+def progress_bar(percent, t, empty='f'):
+    """
+    :param percent: in float; 0.0 - 1.0
+    :param fill:
+    :param empty:
+    """
+
+    # <:f1:959690089930321940>
+    # <:f2:959690089678659626>
+    # <:f3:959690089913516112>
+
+    # <:h1: 959690112290160720 >
+    # <:h2: 959690112315305984 >
+    # <:h3: 959690112512454656 >
+    # <:s1: 959690112420155432 >
+    # <:s2: 959690112327901224 >
+    # <:s3: 959690112353075220 >
+    # <:m1: 959690112390803486 >
+    # <:m2: 959690112428572672 >
+    # <:m3: 959690112348868619 >
+
+    fill = {
+        'f': [
+            '<:f1:959690089930321940>',
+            '<:f2:959690089678659626>',
+            '<:f3:959690089913516112>'
+        ],
+        'h': [
+            '<:h1:959690112290160720>',
+            '<:h2:959690112315305984>',
+            '<:h3:959690112512454656>'
+        ],
+        's': [
+            '<:s1:959690112420155432>',
+            '<:s2:959690112327901224>',
+            '<:s3:959690112353075220>'
+        ],
+        'm': [
+            '<:m1:959690112390803486>',
+            '<:m2:959690112428572672>',
+            '<:m3:959690112348868619>'
+        ]
+    }
+    p = 1.0 if percent > 1.0 else percent
+    # final = [fill[t][1]] * round(p * 10)
+    # final += [fill[empty][1]] * (10-len(final))
+    final = [t] * round(p * 10)
+    final += [empty] * (10 - len(final))
+    _t = []
+    for index, x in enumerate(final):
+        i = 1
+        if index == 0:
+            i = 0
+        elif index == 9:
+            i = 2
+        _t.append(fill[x][i])
+
+    return ''.join(_t)

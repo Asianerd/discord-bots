@@ -2,22 +2,71 @@
     "517998886141558786": {
         "name": "ajian_nedo",
         "user_id": 517998886141558786,
+        "coins": 360,
+        "level": 2,
+        "level_value": {
+            "min": 0,
+            "max": 156,
+            "regeneration": 0,
+            "current": 85
+        },
         "health": {
             "min": 0,
-            "max": 100,
+            "max": 100.0,
             "regeneration": 1,
+            "current": -170
+        },
+        "mana": {
+            "min": 0,
+            "max": 100.0,
+            "regeneration": 3,
             "current": 100
         },
+        "stamina": {
+            "min": 0,
+            "max": 100.0,
+            "regeneration": 3,
+            "current": 100
+        },
+        "defense": 0.0,
+        "dodge_chance": 5.0,
+        "crit_chance": 10.0,
         "effects": {
             "effects": {
-                "regeneration": 5
+                "inexpeditus_inactus": 78
             }
         },
         "current_weapon": null,
         "enemies": [],
+        "backpack": {
+            "apple": 55,
+            "apple_pie": 11
+        },
+        "weapons": {
+            "dull_blade": 10,
+            "adventurer_protector": 5,
+            "hunter_bow": 5,
+            "waster_glove": 5,
+            "cold_blade": 5,
+            "apprentice_note": 5,
+            "silver_blade": 5,
+            "mercenary_glove": 5,
+            "iron_spear": 5,
+            "handy_grimoire": 5,
+            "seasoned_hunter_bow": 5
+        },
+        "blessings": {
+            "basic_earring": 10,
+            "iron_bracelet": 10,
+            "amuletum_inexpeditus": 3
+        },
+        "equipped_blessings": {},
+        "quickslot": [],
         "battle_results": [
-            0,
+            6,
             0
-        ]
+        ],
+        "enemy_message": 0,
+        "player_message": 0
     }
 }

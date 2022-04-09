@@ -6,31 +6,26 @@ import User
 import Dependencies
 
 from Game import ItemClass
-from Game.ItemClass import Consumable, Equipment, ItemType
+from Game.ItemClass import Consumable, Weapon, Blessing, ItemType
+from Game.Battle import BattleProfile
 
 
 class Shop:
-    selling = {
-        ItemClass.ItemType.consumable: [
-            Consumable.ItemID.bread,
-            Consumable.ItemID.apple,
-            Consumable.ItemID.apple_pie,
-            Consumable.ItemID.golden_apple,
+    selling = [
+        Consumable.ItemID.bread,
+        Consumable.ItemID.apple,
+        Consumable.ItemID.apple_pie,
+        Consumable.ItemID.golden_apple,
 
-            Consumable.ItemID.ironskin_potion,
-            Consumable.ItemID.wrath_potion,
-            Consumable.ItemID.adrenaline_vial
-        ],
-        ItemClass.ItemType.equipment: [
-            Equipment.ItemID.iron_shortsword,
-            Equipment.ItemID.platinum_shortsword,
-        ]
-    }
+        Consumable.ItemID.ironskin_potion,
+        Consumable.ItemID.wrath_potion,
+        Consumable.ItemID.adrenaline_vial
+    ]
 
 
 def get_item(name):
     # returns a list of all items with same name
-    return [x for x in ItemClass.all_collections() if x.name.lower() == name.lower()]
+    return [x for x in ItemClass.Consumable.collection.values() if x.name.lower() == name.lower()]
 
 
 def init(client):
@@ -43,7 +38,7 @@ def init(client):
         if page < 0:
             page = 1
 
-        max_page = math.ceil((len(Shop.selling[ItemType.consumable]) / amount_per_page) - 1)
+        max_page = math.ceil((len(Shop.selling) / amount_per_page) - 1)
         if page > max_page:
             page = max_page
 
@@ -52,7 +47,7 @@ def init(client):
             colour=Formatting.colour()
         )
 
-        page_data = Shop.selling[ItemType.consumable][(amount_per_page * page):(amount_per_page * (page + 1))]
+        page_data = Shop.selling[(amount_per_page * page):(amount_per_page * (page + 1))]
         page_data = [page_data[0:int(amount_per_page/2)], page_data[int(amount_per_page/2):]]
         for i in page_data:
             final = ''
@@ -81,7 +76,7 @@ def init(client):
 
         result = get_item(name)
         if not result:
-            suggestions = [f"_{x.name}_   - ${x.price}" for x in ItemClass.all_collections() if name[0] == x.name[0].lower()]
+            suggestions = [f"_{x.name}_   - ${x.price}" for x in ItemClass.Consumable.collection.items() if name[0] == x.name[0].lower()]
             await ctx.send(embed=discord.Embed(
                 title=f"No items with the name '{name}' were found.",
                 description=f"Did you mean :\n" + '\n'.join(
@@ -91,6 +86,7 @@ def init(client):
             return
 
         user: User.User = [x for x in User.User.users if x.user_id == ctx.message.author.id][0]
+        profile: BattleProfile = BattleProfile.fetch_user(ctx.message.author.id, ctx.message.author.id)
         item_result = result[0]
 
         # if len(args) >= 2:
@@ -116,7 +112,8 @@ def init(client):
             ))
             return
 
-        user.append_inventory(item_result.item_id, ItemClass.ItemType.consumable, amount)
+        # user.append_inventory(item_result.item_id, ItemClass.ItemType.consumable, amount)
+        profile.append_inventory(ItemType.consumable, item_result.item_id, amount)
         user.points -= price
         await ctx.send(embed=discord.Embed(
             title=f"Bought {amount} {item_result.name}",

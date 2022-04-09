@@ -1,0 +1,365 @@
+{
+  "weapon": {
+    "dull_blade": {
+      "item_id": "dull_blade",
+      "name": "Dull blade",
+      "description": "Youthful dreams and the thrill of adventure. As you shone the blade with valiance.",
+      "weapon_type": "sword",
+      "rarity": "common",
+      "elements": [],
+
+      "damage": 20,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {}
+    },
+    "adventurer_protector": {
+      "item_id": "adventurer_protector",
+      "name": "Adventurer's Protector",
+      "description": "A spear as straight as a flag pole. It seems to have an imposing presence when swung in battle.",
+      "weapon_type": "spear",
+      "rarity": "common",
+      "elements": [],
+
+      "damage": 20,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {}
+    },
+    "hunter_bow": {
+      "item_id": "hunter_bow",
+      "name": "Hunter's Bow",
+      "description": "A bow which consists of two different sounds: the twang of the bowstring and the whoosh of soaring arrows.",
+      "weapon_type": "bow",
+      "rarity": "common",
+      "elements": [],
+
+      "damage": 20,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {}
+    },
+    "waster_glove": {
+      "item_id": "waster_glove",
+      "name": "Waster's Glove",
+      "description": "A sturdy glove that may be powerful enough to break apart rocks if the wielder has the willpower.",
+      "weapon_type": "glove",
+      "rarity": "common",
+      "elements": [],
+
+      "damage": 20,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {}
+    },
+    "twilight_sword": {
+      "item_id": "twilight_sword",
+      "name": "Twilight Sword",
+      "description": "A blade once shone as bright as the sun. The wielder of the sword once blessed by the sun, shining bright in twilight.",
+      "weapon_type": "sword",
+      "rarity": "rare",
+      "elements": [],
+
+      "damage": 40,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+        "crit_multiplier": 1.1
+      }
+    },
+    "cold_blade": {
+      "item_id": "cold_blade",
+      "name": "Cold Blade",
+      "description": "A reliable steel-forged weapon that serves as a testament to the great adventures of its old master.",
+      "weapon_type": "sword",
+      "rarity": "rare",
+      "elements": [],
+
+      "damage": 40,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+        "damage": 1.05
+      }
+    },
+    "dark_iron_blade": {
+      "item_id": "dark_iron_blade",
+      "name": "Dark Iron Blade",
+      "description": "A perfectly ordinary iron sword, just slightly darker than most.",
+      "weapon_type": "sword",
+      "rarity": "rare",
+      "elements": [],
+
+      "damage": 40,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+        "damage": 1.05
+      }
+    },
+    "apprentice_note": {
+      "item_id": "apprentice_note",
+      "name": "Apprentice's Note",
+      "description": "Notes left behind by a student. Spells are listed and the handwriting is neat.",
+      "weapon_type": "codex",
+      "rarity": "common",
+      "elements": [],
+
+      "damage": 20,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+
+      }
+    },
+    "silver_blade": {
+      "item_id": "silver_blade",
+      "name": "Silver Blade",
+      "description": "A blade made for the enemies, till death meets them apart.",
+      "weapon_type": "sword",
+      "rarity": "uncommon",
+      "elements": [],
+
+      "damage": 30,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+
+      }
+    },
+    "mercenary_glove": {
+      "item_id": "mercenary_glove",
+      "name": "Mercenary's Glove",
+      "description": "A battle-tested glove that has seen better days and worse.",
+      "weapon_type": "glove",
+      "rarity": "uncommon",
+      "elements": [],
+
+      "damage": 30,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+
+      }
+    },
+    "iron_spear": {
+      "item_id": "iron_spear",
+      "name": "Iron Spear",
+      "description": "Sharp and irony at one end, a balanced weapon made for the adventurers.",
+      "weapon_type": "spear",
+      "rarity": "uncommon",
+      "elements": [],
+
+      "damage": 30,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+
+      }
+    },
+    "handy_grimoire": {
+      "item_id": "handy_grimoire",
+      "name": "Handy Grimoire",
+      "description": "A fragile compiled notebook featuring the essentials needed to pass the magic exam.",
+      "weapon_type": "codex",
+      "rarity": "uncommon",
+      "elements": [],
+
+      "damage": 30,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+
+      }
+    },
+    "seasoned_hunter_bow": {
+      "item_id": "seasoned_hunter_bow",
+      "name": "Seasoned Hunter's Bow",
+      "description": "A well-polished bow meticulously cared for by its owner. It feels almost like an extension of the archer's arm.",
+      "weapon_type": "bow",
+      "rarity": "uncommon",
+      "elements": [],
+
+      "damage": 30,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+
+      }
+    },
+    "kanshou": {
+      "item_id": "kanshou",
+      "name": "Kanshou",
+      "description": "I am the bone of my sword. Steel is my blood, glass is my heart...",
+      "weapon_type": "sword",
+      "rarity": "rare",
+      "elements": [],
+
+      "damage": 40,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+        "damage": 1.1
+      }
+    },
+    "bakuya": {
+      "item_id": "bakuya",
+      "name": "Bakuya",
+      "description": "I have created thousands of blades; Unknown to Death; Nor known to Life...",
+      "weapon_type": "sword",
+      "rarity": "rare",
+      "elements": [],
+
+      "damage": 40,
+      "crit_rate": 0,
+
+      "stamina_usage": 0,
+      "mana_usage": 0,
+
+      "buffs": {
+        "damage": 1.1
+      }
+    }
+  },
+  "blessing": {
+    "basic_earring": {
+      "item_id": "basic_earring",
+      "name": "Basic Earring",
+      "description": "A basic earring. It sparkles.",
+      "blessing_type": "earring",
+      "rarity": "common",
+
+      "elements": [],
+      "buffs": {
+        "max_health": 1.2
+      }
+    },
+    "iron_bracelet": {
+      "item_id": "iron_bracelet",
+      "name": "Iron Bracelet",
+      "description": "A sturdy iron bracelet.",
+      "blessing_type": "bracelet",
+      "rarity": "common",
+
+      "elements": [],
+      "buffs": {}
+    },
+    "enchanted_headband": {
+      "item_id": "enchanted_headband",
+      "name": "Enchanted Headband",
+      "description": "A headband, but like its enchanted or something idk",
+      "blessing_type": "headband",
+      "rarity": "common",
+
+      "elements": [],
+      "buffs": {}
+    },
+    "amuletum_inexpeditus": {
+      "item_id": "amuletum_inexpeditus",
+      "name": "Amuletum Inexpeditus",
+      "description": "Forged by gods, in the stellar core of a dying star.",
+      "blessing_type": "bracelet",
+      "rarity": "inexpeditus",
+
+      "elements": ["fire", "water", "wind", "ice", "lightning", "nature", "dark", "light"],
+      "buffs": {
+        "max_health": 1.5,
+        "health_regen": 1.5,
+        "max_stamina": 1.5,
+        "stamina_regen": 1.5,
+        "max_mana": 1.5,
+        "mana_regen": 1.5,
+        "damage": 1.5,
+        "dodge_chance": 1.5,
+        "crit_chance": 1.5,
+        "crit_multiplier": 1.5,
+        "defense": 1.5
+      }
+    }
+  },
+  "item_symbols": {
+    "sword": ":dagger:",
+    "spear": ":person_fencing:",
+    "bow": ":bow_and_arrow:",
+    "glove": ":gloves:",
+    "codex": ":book:",
+
+    "earring": ":ear:",
+    "headband": ":head_bandage:",
+    "bracelet": ":gloves:"
+  },
+  "rarity_colours": {
+    "common": 4408131,
+    "uncommon": 2020864,
+    "rare": 34047,
+    "epic": 10696174,
+    "legendary": 16764928,
+
+    "inexpeditus": 65522
+  },
+  "element_symbols": {
+    "fire": ":fire:",
+    "water": ":ocean:",
+    "wind": ":dash:",
+    "ice": ":ice_cube:",
+    "lightning": ":zap:",
+    "nature": ":sunflower:",
+
+    "dark": "<:black_circle:962263239507468338>",
+    "light": ":white_circle:"
+  },
+  "type_names": {
+    "sword": "Sword",
+    "spear": "Spear",
+    "bow": "Bow",
+    "glove": "Glove",
+    "codex": "Codex",
+
+    "earring": "Earring",
+    "headband": "Headband",
+
+    "bracelet": "Bracelet"
+  }
+}
