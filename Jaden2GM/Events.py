@@ -55,6 +55,69 @@ def init(client):
 
         await client.process_commands(message)
 
+    @client.event
+    async def on_member_update(before, after):
+        if before.id != 738367833045729340:
+            return
+        if before.status == after.status:
+            return
+        with open('Data/jaden_status.json', 'r') as file:
+            data = json.load(file)
+        channel = client.get_channel(data['channel'])
+        if after.status in [discord.Status.idle, discord.Status.online, discord.Status.do_not_disturb]:
+            if data['online']:
+                await channel.send(data['online'])
+        elif after.status == discord.Status.offline:
+            if data['offline']:
+                await channel.send(data['offline'])
+
+    @client.command()
+    async def jaden_status(ctx, *args):
+        try:
+            if not args:
+                raise EOFError
+            t = str(args[0]).lower()
+            if t not in ['online', 'offline', 'channel']:
+                raise EOFError
+            with open('Data/jaden_status.json', 'r', encoding='utf-8') as file:
+                data = json.load(file)
+            if t in ['online', 'offline']:
+                if len(args) <= 1:
+                    data[t] = ''
+                    await ctx.send(embed=discord.Embed(
+                        title=f"{t.capitalize()} message disabled!",
+                        colour=Dependencies.success_embed_colour
+                    ))
+                else:
+                    data[t] = ' '.join([i for i in args[1:]])
+                    await ctx.send(embed=discord.Embed(
+                        title=f"{t.capitalize()} message set!",
+                        description=f'_Message :_ {data[t]}',
+                        colour=Dependencies.success_embed_colour
+                    ))
+            else:
+                data[t] = int(args[1])
+                await ctx.send(embed=discord.Embed(
+                    title=f"Channel set!",
+                    description=f"_New channel :_ <#{data[t]}>",
+                    colour=Dependencies.success_embed_colour
+                ))
+            with open('Data/jaden_status.json', 'w', encoding='utf-8') as file:
+                json.dump(data, file, indent=4)
+        except Exception as e:
+            if e == ValueError:
+                pass
+            else:
+                await ctx.send(embed=discord.Embed(
+                    title="Incorrect syntax!",
+                    description="`>jaden_status online {online message here}`\n"
+                                "`>jaden_status offline {offline message here}`\n"
+                                "`>jaden_status channel {channel id here}`\n\n"
+                                "_(Leave the online/offline messages blank to disable them)_",
+                    colour=Dependencies.error_embed_colour
+                ))
+            return
+
     @client.command()
     async def help(ctx, args='default'):
         # kinda complicated but it works
