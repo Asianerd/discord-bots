@@ -15,7 +15,7 @@ from Game.Battle import BattleProfile, Enemy
 from Game.StatusEffects import EffectContainer
 
 
-def regular_pattern(ctx):
+def regular_pattern(ctx)->BattleProfile:
     BattleProfile.update_user(ctx.message.author.name, ctx.message.author.id)
     return BattleProfile.fetch_user(ctx.message.author.id, ctx.message.author.id)
 
@@ -325,9 +325,40 @@ def init(client: commands.Bot):
         await ctx.send(embed=final_embed)
 
     @client.command()
-    async def all_colours(ctx):
-        for x in ItemClass.equipment_stats['rarity_colours'].items():
+    async def equip_weapon(ctx, *args):
+        profile = regular_pattern(ctx)
+
+        if not args:
             await ctx.send(embed=discord.Embed(
-                title=x[0],
-                colour=x[1]
+                title="No argument provided.",
+                colour=Dependencies.error_embed_colour
             ))
+            return
+        item_name = ' '.join(args)
+        item = ItemClass.search_item(item_name)
+        if (not item) or (item[0] != ItemClass.ItemType.weapon):
+            await ctx.send(embed=discord.Embed(
+                title=f"No weapon found with the name \"{item_name}\"",
+                description=(f"_Did you mean :_\n"+'\n'.join([f' **{ItemClass.equipment_stats["item_symbols"][ItemClass.equipment_stats[ItemClass.ItemType.weapon][x.name]["weapon_type"]]} {ItemClass.equipment_stats[ItemClass.ItemType.weapon][x.name]["name"]}**' for x in profile.weapons.keys() if (x.name[0].lower() == item_name.lower()[0])])) if (len([x for x in profile.weapons.keys() if (x.name[0] == item_name.lower()[0])])) else '',
+                colour=Dependencies.default_embed_colour
+            ))
+            return
+        weapon_type = ItemClass.Weapon.get_enum(item[1]['item_id'])
+        if (not (weapon_type in profile.weapons)) or (not (profile.weapons[weapon_type] > 0)):
+            await ctx.send(embed=discord.Embed(
+                title=f'You don\'t have a "{ItemClass.equipment_stats[ItemClass.ItemType.weapon][weapon_type.name]["name"]}" in your inventory.',
+                colour=Dependencies.error_embed_colour
+            ))
+            return
+
+        # Unequip current weapon
+        if profile.current_weapon:
+            profile.weapons[profile.current_weapon.item_id] += 1
+
+        # Equip new weapon
+        profile.current_weapon = ItemClass.Weapon(weapon_type)
+        profile.weapons[profile.current_weapon.item_id] -= 1
+        await ctx.send(embed=discord.Embed(
+            title=f'{profile.current_weapon.name} equipped',
+            colour=Dependencies.success_embed_colour
+        ))

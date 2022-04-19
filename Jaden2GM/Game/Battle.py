@@ -140,9 +140,13 @@ class BattleProfile:
             description=f":hearts: : {Formatting.progress_bar(self.health.percent(), 'h')} {' +'[self.health.percent() > 1]} `{int(self.health.current)}/{int(self.health.max)}` `+{self.health.regeneration}`\n"
                         f":zap: : {Formatting.progress_bar(self.stamina.percent(), 's')} {' +'[self.stamina.percent() > 1]} `{int(self.stamina.current)}/{int(self.stamina.max)}` `+{self.stamina.regeneration}`\n"
                         f":four_leaf_clover: : {Formatting.progress_bar(self.mana.percent(), 'm')} {' +'[self.mana.percent() > 1]} `{int(self.mana.current)}/{int(self.mana.max)}` `+{self.mana.regeneration}`\n"
-                        f":shield: : `{int(self.defense)}`     :dash: : `{round(self.dodge_chance, 3)}%`\n",
+                        f":dagger: `{round((self.current_weapon.damage if self.current_weapon else 5) * self.effects.property_container.damage, 2)}` :shield: : `{int(self.defense)}` :dash: : `{round(self.dodge_chance, 3)}%`\n",
             colour=int((int(color[0]) * 65536) + (int(color[1]) * 256))
         )
+        if self.current_weapon:
+            final.description = f"**Weapon** : _{ItemClass.equipment_stats['item_symbols'][self.current_weapon.weapon_type.name]} {self.current_weapon.name}_\n" + final.description
+        else:
+            final.description = f"**Weapon** : _None_\n\n" + final.description
         if len(self.effects.effects):
             final.add_field(name='**Effects**', value=' ,'.join(
                 [f'{EffectContainer.display_names[x[0]]}[{x[1]}]' for x in self.effects.effects.items()]))
@@ -193,6 +197,9 @@ class BattleProfile:
         final['mana'] = self.mana.as_dict()
         final['stamina'] = self.stamina.as_dict()
 
+        if self.current_weapon:
+            final['current_weapon'] = self.current_weapon.item_id.name
+
         final['effects'] = self.effects.as_dict()
         final['enemies'] = [x.as_dict() for x in final['enemies']]
 
@@ -216,6 +223,9 @@ class BattleProfile:
         self.health = GameValue.GameValue.object_from_dict(self.health)
         self.mana = GameValue.GameValue.object_from_dict(self.mana)
         self.stamina = GameValue.GameValue.object_from_dict(self.stamina)
+
+        if self.current_weapon:
+            self.current_weapon = ItemClass.Weapon(ItemClass.Weapon.get_enum(self.current_weapon))
 
         self.effects = EffectContainer.object_from_dict(self.effects)
         self.enemies = [Enemy.object_from_dict(x) for x in data_dict['enemies']]
