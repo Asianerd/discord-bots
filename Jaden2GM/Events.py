@@ -1,5 +1,6 @@
 import json
 import math
+import time
 
 import alexa_reply
 import discord
@@ -58,10 +59,11 @@ def init(client):
     @client.event
     async def on_member_update(before, after):
         if before.id != 738367833045729340:
+            # if before.id != 517998886141558786:
             return
         if before.status == after.status:
             return
-        with open('Data/jaden_status.json', 'r') as file:
+        with open('Data/jaden_status.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
         channel = client.get_channel(data['channel'])
         if after.status in [discord.Status.idle, discord.Status.online, discord.Status.do_not_disturb]:
@@ -70,6 +72,8 @@ def init(client):
         elif after.status == discord.Status.offline:
             if data['offline']:
                 await channel.send(data['offline'])
+        with open('Data/jaden_status.json', 'w', encoding='utf-8') as file:
+            json.dump(data, file, indent=4)
 
     @client.command()
     async def jaden_status(ctx, *args):
