@@ -171,7 +171,7 @@ def init(client):
 
     @client.command()
     async def server_info(ctx):
-        ip = "147.135.71.70:25592"
+        ip = "51.79.163.221:25583"
         server_name = "RetardSMP"
 
         try:
