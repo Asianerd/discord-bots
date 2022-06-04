@@ -171,14 +171,17 @@ def init(client):
 
     @client.command()
     async def server_info(ctx):
+        ip = "147.135.71.70:25592"
+        server_name = "RetardSMP"
+
         try:
-            server = MinecraftServer.lookup("147.135.71.70:25592")
+            server = MinecraftServer.lookup(ip)
             if server.status() is None:
-                description = f"IP : `147.135.71.70:25592`\n"
+                description = f"IP : `{ip}`\n"
                 line = "⚫"
             else:
                 mc_status = server.status()
-                description = f"**IP :** `147.135.71.70:25592`\n" \
+                description = f"**IP :** `{ip}`\n" \
                               f"**Version :** {mc_status.version.name}\n" \
                               f"**Latency :** {mc_status.latency}\n" \
                               f"**Players :** {mc_status.players.online}/{mc_status.players.max}\n"
@@ -190,11 +193,11 @@ def init(client):
                 except Exception as e:
                     print(e)
 
-            final = discord.Embed(title=f"{line}  **FailureSMP**",
+            final = discord.Embed(title=f"{line}  **{server_name}**",
                                   description=description,
                                   color=Formatting.colour())
         except:
-            final = discord.Embed(title="_FailureSMP cannot be pinged at the moment._",
+            final = discord.Embed(title=f"_{server_name} cannot be pinged at the moment._",
                                   description="Please try again in the near future.")
         await ctx.send(embed=final)
 
