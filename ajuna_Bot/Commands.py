@@ -170,7 +170,7 @@ def init(client):
         if disposable:
             await Dependencies.dispose_message(msg)
 
-    @client.command()
+    @client.command(aliases=['mc_server', 'mc', 'retardsmp', 'server', 'minecraft'])
     async def server_info(ctx):
         with open('ajuna_Data/mc_data.json', 'r') as file:
             data = json.load(file)
