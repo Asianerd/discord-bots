@@ -2,19 +2,19 @@
     "517998886141558786": {
         "name": "ajian_nedo",
         "user_id": 517998886141558786,
-        "coins": 360,
-        "level": 2,
+        "coins": 150,
+        "level": 1,
         "level_value": {
             "min": 0,
-            "max": 156,
+            "max": 125,
             "regeneration": 0,
-            "current": 85
+            "current": 90
         },
         "health": {
             "min": 0,
             "max": 100.0,
             "regeneration": 1,
-            "current": -170
+            "current": -144
         },
         "mana": {
             "min": 0,
@@ -32,38 +32,35 @@
         "dodge_chance": 5.0,
         "crit_chance": 10.0,
         "effects": {
-            "effects": {
-                "inexpeditus_inactus": 78
-            }
+            "effects": {}
         },
-        "current_weapon": null,
+        "current_weapon": "mercenary_glove",
         "enemies": [],
         "backpack": {
-            "apple": 55,
-            "apple_pie": 11
+            "apple": 25,
+            "apple_pie": 5
         },
         "weapons": {
-            "dull_blade": 10,
-            "adventurer_protector": 5,
-            "hunter_bow": 5,
-            "waster_glove": 5,
-            "cold_blade": 5,
-            "apprentice_note": 5,
-            "silver_blade": 5,
-            "mercenary_glove": 5,
-            "iron_spear": 5,
-            "handy_grimoire": 5,
-            "seasoned_hunter_bow": 5
+            "dull_blade": 4,
+            "adventurer_protector": 2,
+            "hunter_bow": 2,
+            "waster_glove": 2,
+            "cold_blade": 2,
+            "apprentice_note": 2,
+            "silver_blade": 2,
+            "mercenary_glove": 1,
+            "iron_spear": 2,
+            "handy_grimoire": 2,
+            "seasoned_hunter_bow": 2
         },
         "blessings": {
-            "basic_earring": 10,
-            "iron_bracelet": 10,
-            "amuletum_inexpeditus": 3
+            "basic_earring": 4,
+            "iron_bracelet": 4
         },
         "equipped_blessings": {},
         "quickslot": [],
         "battle_results": [
-            6,
+            1,
             0
         ],
         "enemy_message": 0,

@@ -1,6 +1,7 @@
 import Formatting
 import Dependencies
 import discord
+import json
 from discord.ext.commands import has_permissions
 from mcstatus import MinecraftServer
 from uptime import uptime
@@ -171,8 +172,10 @@ def init(client):
 
     @client.command()
     async def server_info(ctx):
-        ip = "51.79.163.221:25583"
-        server_name = "RetardSMP"
+        with open('ajuna_Data/mc_data.json', 'r') as file:
+            data = json.load(file)
+            ip = data['ip']
+            server_name = data['server_name']
 
         try:
             server = MinecraftServer.lookup(ip)

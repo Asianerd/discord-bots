@@ -1,9 +1,17 @@
 import discord
+from discord.ext import tasks
+import json
 
 import Dependencies
 import alexa_reply
+import random
 import asyncio
+from mcstatus import MinecraftServer
+
+import time
+
 from Economy import Economy
+import Formatting
 
 
 def contains_emote(message):
@@ -32,6 +40,7 @@ def init(client):
             Dependencies.emojis.append(x)
         print(f"{len(Dependencies.emojis)} emojis gathered")
         print("ajuna_loli is awake!")
+        update_MC_info.start()
 
     @client.event
     async def on_message(message):
@@ -67,3 +76,49 @@ def init(client):
     @client.event
     async def on_voice_state_update(member, before, after):
         await Economy.on_voice_state_update(client, member, before, after)
+
+    @tasks.loop(seconds=5)
+    async def update_MC_info():
+        with open('ajuna_Data/mc_data.json', 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            ip = data['ip']
+            server_name = data['server_name']
+
+        try:
+            server = MinecraftServer.lookup(ip)
+            if server.status() is None:
+                description = f"IP : `{ip}`\n"
+                line = "⚫"
+            else:
+                mc_status = server.status()
+                description = f"**IP :** `{ip}`\n\n" \
+                              f"**Average ping** : `{random.randint(9000,10000)/1000}ms`\n" \
+                              f"**Version :** {mc_status.version.name}\n" \
+                              f"**Players :** {mc_status.players.online}/{mc_status.players.max}\n"
+                line = "🟢"
+
+                # Fetching players names
+                try:
+                    description += '\n'.join([f" \> {x.name}" for x in mc_status.players.sample])
+                except Exception as e:
+                    pass
+                description += f"\n\n_Last checked : <t:{int(time.time())}:R> _"
+
+            final = discord.Embed(title=f"{line}  **{server_name}**",
+                                  description=description,
+                                  color=Formatting.colour())
+        except:
+            final = discord.Embed(
+                title=f"⚫ {server_name} is offline",
+                description=f"**IP :** `{ip}`\n"
+                            f"\n\n_Last checked : <t:{int(time.time())}:R> _"
+            )
+        channel = await client.fetch_channel(data['server_channel'])
+        try:
+            message = await channel.fetch_message(data['server_message_id'])
+            await message.edit(embed=final)
+        except Exception as e:
+            message = await channel.send(embed=final)
+            data['server_message_id'] = message.id
+            with open('ajuna_Data/mc_data.json', 'w', encoding='utf-8') as file:
+                json.dump(data, file, indent=4)
