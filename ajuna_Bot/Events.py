@@ -118,7 +118,8 @@ def init(client):
             message = await channel.fetch_message(data['server_message_id'])
             await message.edit(embed=final)
         except Exception as e:
-            message = await channel.send(embed=final)
-            data['server_message_id'] = message.id
-            with open('ajuna_Data/mc_data.json', 'w', encoding='utf-8') as file:
-                json.dump(data, file, indent=4)
+            print(e)
+            # message = await channel.send(embed=final)
+            # data['server_message_id'] = message.id
+            # with open('ajuna_Data/mc_data.json', 'w', encoding='utf-8') as file:
+            #     json.dump(data, file, indent=4)
