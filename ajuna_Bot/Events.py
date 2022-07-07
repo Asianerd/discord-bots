@@ -77,7 +77,7 @@ def init(client):
     async def on_voice_state_update(member, before, after):
         await Economy.on_voice_state_update(client, member, before, after)
 
-    @tasks.loop(seconds=10)
+    @tasks.loop(seconds=60)
     async def update_MC_info():
         with open('ajuna_Data/mc_data.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
