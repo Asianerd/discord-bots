@@ -1,5 +1,6 @@
 import json
 import random
+import datetime
 
 with open('data.json', 'r') as d:
     data_file = json.load(d)
@@ -40,3 +41,7 @@ def init():
 
 def chance(c):
     return random.randint(1, 100) <= c
+
+
+def is_weekend():
+    return datetime.datetime.now().weekday() in [5, 6]

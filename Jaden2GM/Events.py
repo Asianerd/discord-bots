@@ -553,11 +553,12 @@ def init(client):
         user = User.User.fetch_user(ctx.message.author.id, ctx.message.author.name)
 
         result = user.daily_points()
+        is_weekend = Dependencies.is_weekend()
         if result:
             await ctx.send(embed=discord.Embed(
                 title=f"Thanks for claiming today's daily points, {ctx.message.author.name}",
-                description=f"_{5 + user.streak} Quest Points have been added to the Leaderboard!_\n"
-                            f"_{user.points - (5 + user.streak)} -> {user.points}_",
+                description=f"_{(5 * (2 if is_weekend else 1)) + user.streak} Quest Points have been added to the Leaderboard!_\n"
+                            f"_{user.points - ((5 * (2 if is_weekend else 1)) + user.streak)} -> {user.points}_",
                 colour=Dependencies.default_embed_colour
             ))
         else:
@@ -689,3 +690,9 @@ def init(client):
                                 f"```",
                     colour=Dependencies.default_embed_colour
                 ))
+
+    @client.command()
+    async def is_weekend(ctx):
+        await ctx.send(embed=discord.Embed(
+            title=Dependencies.is_weekend()
+        ))

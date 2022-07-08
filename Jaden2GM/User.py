@@ -1,6 +1,7 @@
 import json
 import time
 import Quest
+import Dependencies
 from Game import ItemClass
 
 
@@ -69,7 +70,9 @@ class User:
             else:
                 self.streak = 0
 
-            self.points += 5 + self.streak
+            is_weekend = Dependencies.is_weekend()
+
+            self.points += (5 * (2 if is_weekend else 1)) + self.streak
             self.last_daily_points = int(time.time())
 
             if self.streak >= 30:
