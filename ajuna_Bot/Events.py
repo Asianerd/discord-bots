@@ -40,7 +40,7 @@ def init(client):
             Dependencies.emojis.append(x)
         print(f"{len(Dependencies.emojis)} emojis gathered")
         print("ajuna_loli is awake!")
-        update_MC_info.start()
+        #update_MC_info.start()
 
     @client.event
     async def on_message(message):
