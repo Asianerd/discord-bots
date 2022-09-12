@@ -79,6 +79,8 @@ def init(client):
 
     @tasks.loop(seconds=60)
     async def update_MC_info():
+        return
+
         with open('ajuna_Data/mc_data.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
             ip = data['ip']
