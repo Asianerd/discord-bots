@@ -9,7 +9,8 @@ import Formatting
 import Dependencies
 import Commands
 
-client = commands.Bot(command_prefix=Dependencies.command_prefix)
+intents = discord.Intents.all()
+client = commands.Bot(command_prefix=Dependencies.command_prefix, intents=intents)
 Events.init(client)
 
 bot_token = pickle.load(open(f"{Dependencies.save_file_path}/ajuna - Token", "rb"))
