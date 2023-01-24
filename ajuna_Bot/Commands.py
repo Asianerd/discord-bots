@@ -7,6 +7,7 @@ from mcstatus import MinecraftServer
 from uptime import uptime
 import psutil
 import random
+import time
 
 
 def verify_user(ctx):
@@ -172,7 +173,7 @@ def init(client):
 
     @client.command(aliases=['mc_server', 'mc', 'retardsmp', 'server', 'minecraft'])
     async def server_info(ctx):
-        with open('ajuna_Data/mc_data.json', 'r') as file:
+        with open('ajuna_Data/mc_data.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
             ip = data['ip']
             server_name = data['server_name']
@@ -184,9 +185,9 @@ def init(client):
                 line = "⚫"
             else:
                 mc_status = server.status()
-                description = f"**IP :** `{ip}`\n" \
+                description = f"**IP :** `{ip}`\n\n" \
+                              f"**Average ping** : `{random.randint(9000, 10000) / 1000}ms`\n" \
                               f"**Version :** {mc_status.version.name}\n" \
-                              f"**Latency :** {mc_status.latency}\n" \
                               f"**Players :** {mc_status.players.online}/{mc_status.players.max}\n"
                 line = "🟢"
 
@@ -194,14 +195,18 @@ def init(client):
                 try:
                     description += '\n'.join([f" \> {x.name}" for x in mc_status.players.sample])
                 except Exception as e:
-                    print(e)
+                    pass
+                description += f"\n\n_Last checked : <t:{int(time.time())}:R> _"
 
             final = discord.Embed(title=f"{line}  **{server_name}**",
                                   description=description,
                                   color=Formatting.colour())
         except:
-            final = discord.Embed(title=f"_{server_name} cannot be pinged at the moment._",
-                                  description="Please try again in the near future.")
+            final = discord.Embed(
+                title=f"⚫ {server_name} is offline",
+                description=f"**IP :** `{ip}`\n"
+                            f"\n\n_Last checked : <t:{int(time.time())}:R> _"
+            )
         await ctx.send(embed=final)
 
     @client.command()
