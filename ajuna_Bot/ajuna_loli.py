@@ -1,7 +1,18 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
+import json
 
-bot = commands.Bot(command_prefix="!")
+import Commands
+import Events
 
+with open('ajuna_Data/config.json', 'r') as file:
+    _d = json.load(file)
+    bot_state = _d['state']
+    command_prefix = _d['prefix']
 
+bot = commands.Bot(command_prefix=command_prefix)
 
-"NzM2NjI2MDM4Mzk3ODYxOTg4.GQGwlK.lUljjyCYf6PCV5ZZxG0f3hOJR1fmZPd3YoB5uQ"
+Events.init(bot)
+Commands.init(bot)
+
+with open(f'ajuna_Data/{bot_state}_token.txt', 'r') as file:
+    bot.run(file.read())
