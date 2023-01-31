@@ -1,21 +1,7 @@
-import discord
 from discord.ext import commands
-import random
-import pickle
-from pathlib import Path
 
-import Events
-import Formatting
-import Dependencies
-import Commands
+bot = commands.Bot(command_prefix="!")
 
-intents = discord.Intents.all()
-client = commands.Bot(command_prefix=Dependencies.command_prefix, intents=intents)
-Events.init(client)
 
-bot_token = pickle.load(open(f"{Dependencies.save_file_path}/ajuna - Token", "rb"))
 
-Commands.init(client)
-Dependencies.initialize()
-
-client.run(bot_token)
+"NzM2NjI2MDM4Mzk3ODYxOTg4.GQGwlK.lUljjyCYf6PCV5ZZxG0f3hOJR1fmZPd3YoB5uQ"
