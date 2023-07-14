@@ -65,10 +65,6 @@ reactions = {
 }
 
 
-async def delayed_delete(message, delay=3):
-    await message.delete(delay=delay)
-
-
 async def dispose_message(ctx):
     disposable_messages.append(ctx)
     await ctx.add_reaction(reactions[ReactionType.wastebasket])
