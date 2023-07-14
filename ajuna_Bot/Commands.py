@@ -28,9 +28,13 @@ def init(bot: Bot):
                 colour=Dependencies.colour()
             ))
     
-    @bot.slash_command()
+    @bot.slash_command(description="Displays information about the organic compound.")
     async def chem(ctx: discord.commands.ApplicationContext,
                    name: Option(str, "Name of an organic compound", required=True, default='methane')):
+        final = discord.Embed(
+            title=name,
+            colour=Dependencies.colour()
+        )
         if Chemistry.hydrocarbon(name):
             h = Chemistry.hydrocarbon(name)
             d = f"""
@@ -39,15 +43,23 @@ def init(bot: Bot):
             **Type of organic compound** : `{h['o_type']}`
             **General formula** : `{h['general_formula'][0]}; {h['general_formula'][1]}`
             **Number of carbon atoms** : `{h['carbon']}`
+            
+            **Chemical formula** : _{Chemistry.generate_name(name)}_
+            
+            **Structural formula**
             """
+            result = Chemistry.image_generate(Chemistry.fix_input(name))
+            final.set_image(url="attachment://image.png")
+            if result:
+                file = discord.File(f"chemistry_assets/library/{Chemistry.fix_input(name)}.png", filename="image.png")
+            else:
+                file = discord.File(f"chemistry_assets/media/ester.png", filename="image.png")
         else:
             d = f'{name} is not valid.'
+        final.description = d
         await ctx.respond(
-            embed=discord.Embed(
-                title=name,
-                description=d,
-                colour=Dependencies.colour()
-            )
+            file=file,
+            embed=final
         )
 
     # @bot.slash_command(description="Fetches the minecraft server's status and players")
