@@ -131,15 +131,16 @@ def generate_name(name):
     carbon, series, location = parse_suffix_prefix(name)
     carbon += 1
     series += 1
+    print(f'{carbon} : {series}')
     match series:
         case 1:
-            return f'C{get_subscript(carbon + 1)}H{get_subscript((2 * (carbon + 1)) + 2)}'
+            return f'C{get_subscript(carbon)}H{get_subscript((2 * carbon) + 2)}'
         case 2:
-            return f'C{get_subscript(carbon + 1)}H{get_subscript((2 * (carbon + 1)))}'
+            return f'C{get_subscript(carbon)}H{get_subscript((2 * carbon))}'
         case 3:
-            return f'C{get_subscript(carbon + 1)}H{get_subscript((2 * (carbon + 1)) - 2)}'
+            return f'C{get_subscript(carbon)}H{get_subscript((2 * carbon) - 2)}'
         case 4:
-            return f'C{get_subscript(carbon)}H{get_subscript((2 * (carbon)) + 1)}OH'
+            return f'C{get_subscript(carbon)}H{get_subscript((2 * carbon) + 1)}OH'
         case 5:
             return f'C{get_subscript(carbon - 1)}H{get_subscript((2 * (carbon - 1)) + 1)}COOH'
         case 6:
@@ -173,7 +174,7 @@ def image_generate(name):
             image_from_list(field).save(f'chemistry_assets/library/{name}.png')
             return True
         case 2:
-            field = ['' for i in range(carbon + 2)]
+            field = ['' for i in range(carbon + 1)]
             field[location] = '-h-c=c-h-'
             field[0] = 'h-'
             field[-1] = '-h'
