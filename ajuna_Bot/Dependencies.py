@@ -52,6 +52,14 @@ def uptime_string(enoch_time):
         return f"{int(minute)}m {int(second)}s"
 
 
+def ram_bar(p, length):
+    final = ['-' for _ in range(length)]
+    if p > 1:
+        p = 1
+    for i in range(int(length * p)):
+        final[i] = "#"
+    return ''.join(final)
+
 # region Message deletion
 disposable_messages = []
 

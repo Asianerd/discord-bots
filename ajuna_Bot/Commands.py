@@ -2,6 +2,8 @@ import discord
 import json
 import time
 import random
+import psutil
+from uptime import uptime
 from discord.commands import Option
 from discord.ext import commands
 from discord.ext.commands import Bot
@@ -18,7 +20,7 @@ def find_in_message(content, target):
     return info
 
 
-def init(bot: Bot):
+def init(bot: Bot, bot_state):
     @bot.slash_command()
     async def test(ctx):
         await ctx.respond(
@@ -142,3 +144,29 @@ def init(bot: Bot):
 
         if disposable:
             await Dependencies.dispose_message(msg)
+    
+    @bot.slash_command()
+    async def server(ctx: discord.commands.ApplicationContext):
+#         **CPU** : `{round(psutil.cpu_percent(), 2)}%   {psutil.cpu_count()}x   {psutil.cpu_freq().current / 1000}Ghz`
+# **RAM** : `[{Dependencies.ram_bar(_mem.used / _mem.total, 15)}]  ({int((_mem.used / _mem.total) * 100)}%)`
+# `{int(_mem.used / 1048576)}/{int(_mem.total / 1048576)} Mib`
+        
+        _mem = psutil.virtual_memory();
+        final = discord.Embed(
+            title=f"**Server Info**",
+            description=f"""**Location** : ` Sydney 📍 `
+**Latency** : ` {round(bot.latency * 1000, 2)}ms 🟢 `
+**Uptime** : ` {Dependencies.uptime_string(uptime())} `""",
+            colour=Dependencies.colour()
+            )
+        final.add_field(
+            name="RAM",
+            value=f"` [{Dependencies.ram_bar(_mem.used / _mem.total, 15)}] `\n` {int(_mem.used / 1048576)}/{int(_mem.total / 1048576)} Mib  ({int((_mem.used / _mem.total) * 100)}%) `"
+        )
+        final.add_field(
+            name="CPU",
+            value=f"` {psutil.cpu_freq().current / 1000}Ghz  {round(psutil.cpu_percent(), 2)}% \n {psutil.cpu_count()}x Cores `",
+            inline=True
+        )
+        final.set_footer(text=f"Asia Pacific (Sydney) ap-southeast-2 on {bot_state}")
+        await ctx.respond(embed=final)

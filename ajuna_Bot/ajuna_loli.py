@@ -12,7 +12,7 @@ with open('ajuna_Data/config.json', 'r') as file:
 bot = commands.Bot(command_prefix=command_prefix)
 
 Events.init(bot)
-Commands.init(bot)
+Commands.init(bot, bot_state)
 
 with open(f'ajuna_Data/{bot_state}_token.txt', 'r') as file:
     bot.run(file.read())
