@@ -10,7 +10,7 @@ from discord.ext.commands import Bot
 
 import Dependencies
 import Chemistry
-import llm
+# import llm
 
 
 def find_in_message(content, target):
@@ -172,19 +172,19 @@ def init(bot: Bot, bot_state):
         final.set_footer(text=f"Asia Pacific (Sydney) ap-southeast-2 on {bot_state}")
         await ctx.respond(embed=final)
 
-    @bot.slash_command(description="VERY VERY STUPID LLM; Based on Google's flan-t5-small dataset")
-    async def ai(ctx: discord.commands.ApplicationContext,
-                # Write me a story with an interesting plot.
-                # Write me a story with a sci-fi plot.
-                # Write me a sci-fi story with an interesting plot.
-                prompt: Option(str, "Prompt", required=True, default='Write me a sci-fi story with an interesting plot.')):
-        final = discord.Embed(
-            title=prompt,
-            description="*Generating response*",
-            colour=Dependencies.colour()
-        )
-        final.set_footer(text=f"generated with google/flan-t5-small dataset")
-        message = await ctx.respond(embed=final)
-        final.description = f"{llm.generate(prompt)}"
-        await message.edit_original_response(embed=final)
+    # @bot.slash_command(description="VERY VERY STUPID LLM; Based on Google's flan-t5-small dataset")
+    # async def ai(ctx: discord.commands.ApplicationContext,
+    #             # Write me a story with an interesting plot.
+    #             # Write me a story with a sci-fi plot.
+    #             # Write me a sci-fi story with an interesting plot.
+    #             prompt: Option(str, "Prompt", required=True, default='Write me a sci-fi story with an interesting plot.')):
+    #     final = discord.Embed(
+    #         title=prompt,
+    #         description="*Generating response*",
+    #         colour=Dependencies.colour()
+    #     )
+    #     final.set_footer(text=f"generated with google/flan-t5-small dataset")
+    #     message = await ctx.respond(embed=final)
+    #     final.description = f"{llm.generate(prompt)}"
+    #     await message.edit_original_response(embed=final)
         
