@@ -207,7 +207,7 @@ def init(bot: Bot, bot_state):
                               f"**Average ping** : `{random.randint(15_000,25_000)/1000}ms`\n" \
                               f"**Version :** {mc_status.version.name}\n" \
                               f"**Players :** {mc_status.players.online}/{mc_status.players.max}\n" \
-                              f"**[Mods](https://drive.google.com/drive/folders/1U9-R_wNnR-Atct9y9io-rnME5Q4rzScs?usp=sharing)**"
+                              f"**[Mods](https://drive.google.com/drive/folders/1U9-R_wNnR-Atct9y9io-rnME5Q4rzScs?usp=sharing)**\n\n"
                 line = "🟢"
 
                 # Fetching players names
