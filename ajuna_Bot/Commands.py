@@ -226,7 +226,11 @@ def init(bot: Bot, bot_state):
                 description=f"**IP :** `{ip}`\n"
                             f"\n\n_Last checked : <t:{int(time.time())}:R> _"
             )
-        channel = await bot.fetch_channel(data['server_channel'])
+        try:
+            channel = await bot.fetch_channel(data['server_channel'])
+        except Exception as e:
+            print(e)
+            print(f"Time : {int(time.time())}")
         try:
             message = await channel.fetch_message(data['server_message_id'])
             await message.edit(embed=final)
