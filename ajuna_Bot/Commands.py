@@ -189,7 +189,7 @@ def init(bot: Bot, bot_state):
     #     final.description = f"{llm.generate(prompt)}"
     #     await message.edit_original_response(embed=final)
     
-    @tasks.loop(seconds=10)
+    @tasks.loop(seconds=30)
     async def update_MC_info():
         with open('ajuna_Data/mc_data.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
