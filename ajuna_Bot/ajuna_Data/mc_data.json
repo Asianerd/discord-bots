@@ -1,6 +1,12 @@
 {
-    "ip": "retardsmp.falixsrv.me",
-    "server_name": "RetardSMP",
-    "server_channel": "851439027927384094",
-    "server_message_id": 1213510758969905292
+    "ip": "salleh.aternos.me:61598",
+    "server_name": "Salleh",
+    "server_channel": "1250423935594659913",
+    "server_message_id": 1250426979384299603,
+
+
+    "retardsmp_ip": "retardsmp.falixsrv.me",
+    "retardsmp_server_name": "RetardSMP",
+    "retardsmp_server_channel": "851439027927384094",
+    "retardsmp_server_message_id": 1213510758969905292
 }
